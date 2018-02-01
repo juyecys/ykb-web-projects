@@ -20,10 +20,8 @@ new Vue({
 
 router.beforeEach((to, from, next) => {
   console.log(to.path ==='/login' , store.state.hadLogin)
-  if(to.path ==='/login' && store.state.hadLogin){
-    Toast.normal({
-      msg: '你已经登录啦'
-    });
+  if(to.path ==='/login'){
+    window.sessionStorage.setItem('loginToPage',from.name)
   }
   next()
 })

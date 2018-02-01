@@ -14,6 +14,7 @@
   import searchInput from '../components/searchInput'
   import choice from '../components/choice'
   import Toast from '../components/toast.js'
+  import axios from 'axios'
   export default {
     name:'index',
     components:{

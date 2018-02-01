@@ -16,7 +16,7 @@
         <div class="menuItem" v-if="menuItem.level === '2'">
           <span>父菜单</span>
           <div class="searchInputCon">
-            <search-input :value.sync="menuItem.parentName" :searchData="menuItem.parentMenu" :onlySelect="true"></search-input>
+            <search-input :value.sync="menuItem.parentName" :searchData="parentMenu" :onlySelect="true"></search-input>
           </div>
         </div>
         <div class="menuItem">
@@ -107,10 +107,10 @@
           "content":"",
           "url":"",
           "imgUrl":"",
-          "parentMenu":[],
-          "parentMenuId":[],
           "parentName":''
         },
+        parentMenu:[],
+        parentMenuId:[],
         btns:[{
           name:'新增',
           event:this.addEvent
@@ -131,7 +131,7 @@
     mounted(){
       console.log('mounted')
       if(this.$store.state.wxMenuInfos.wxMenuPageInfo.nowPage !== 1){
-          this.$store.dispatch('getWXMenu',{pageSize:10,nowPage:1})
+          this.$store.dispatch('getWXMenu',{pageSize:25,nowPage:1})
       }
       console.log()
     },
@@ -140,11 +140,18 @@
         return this.menuItem.levelName
       },
       wxMenuResults(){
-        let wxMenuResults = this.$store.state.wxMenuInfos.wxMenuResults
+        let wxMenuResults = this.$store.state.wxMenuInfos.wxMenuResults,index=0
         for(let i=wxMenuResults.length-1;i>=0;i-- ){
           wxMenuResults[i].typeName = this.menuType[wxMenuResults[i].type]
           wxMenuResults[i].levelName = wxMenuResults[i].level===1?'一级':'二级'
+          if(wxMenuResults[i].type === 'group'){
+            console.log(wxMenuResults[i])
+            this.parentMenu.splice(index,1,wxMenuResults[i].name)
+            this.parentMenuId.splice(index,1,wxMenuResults[i].id)
+            index++
+          }
         }
+        console.log(this.parentMenu)
         return wxMenuResults
       },
       wxMenuPageInfo(){
@@ -176,8 +183,6 @@
             "content":"",
             "url":"",
             "imgUrl":"",
-            "parentMenu":[],
-            "parentMenuId":[],
             "parentName":''
           }
           this.menuItem = Object.assign({},this.menuItem,this.wxMenuResults[tr])
@@ -217,6 +222,9 @@
           Toast.error({
             'msg':'请不要重复点击按钮'
           })
+          setTimeout(()=>{
+            window.sessionStorage.setItem('hadMakeMenu',true)
+          },5000)
         }
       },
       showParentMenu(){
@@ -224,12 +232,12 @@
         for(let i=wxMenuResults.length-1;i>=0;i-- ){
           if(wxMenuResults[i].type === 'group'){
             console.log(wxMenuResults[i])
-            this.menuItem.parentMenu.splice(index,1,wxMenuResults[i].name)
-            this.menuItem.parentMenuId.splice(index,1,wxMenuResults[i].id)
+            this.parentMenu.splice(index,1,wxMenuResults[i].name)
+            this.parentMenuId.splice(index,1,wxMenuResults[i].id)
             index++
           }
         }
-        console.log(this.menuItem.parentMenu)
+        console.log(this.parentMenu)
       },
       addEvent(){
         maskLayer.show()
@@ -247,8 +255,6 @@
           "content":"",
           "url":"",
           "imgUrl":"",
-          "parentMenu":[],
-          "parentMenuId":[],
           "parentName":''
         }
       },
@@ -287,9 +293,11 @@
           return
         }
         let id = ''
-        for(let i=menuItem.parentMenu.length-1;i>=0;i--){
-          if(menuItem.parentName === menuItem.parentMenu[i]){
-            id = menuItem.parentMenuId[i]
+        console.log(this.parentMenu,menuItem.parentName)
+        for(let i=this.parentMenu.length-1;i>=0;i--){
+          console.log(menuItem.parentName , this.parentMenu[i])
+          if(menuItem.parentName === this.parentMenu[i]){
+            id = this.parentMenuId[i]
               break;
           }
         }
@@ -376,8 +384,6 @@
             "content":"",
             "url":"",
             "imgUrl":"",
-            "parentMenu":[],
-            "parentMenuId":[],
             "parentName":''
         }
       },

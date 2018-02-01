@@ -37,9 +37,17 @@
         if(this.user !== '' && this.passwd !== ''){
           this.$store.dispatch('toLogin',{user:this.user,passwd:this.passwd,cb:(state=true)=>{
             if(state){
-              this.$router.push({
-                name:'index'
-              })
+              if(window.sessionStorage.getItem('loginToPage') !== null || window.sessionStorage.getItem('loginToPage')!==''){
+                this.$router.push({
+                  name:window.sessionStorage.getItem('loginToPage')
+                })
+                window.sessionStorage.setItem('loginToPage','')
+              }else{
+                this.$router.push({
+                  name:'index'
+                })
+              }
+
             }else{
               Toast.error({
                 msg:'可能是账号或者密码错误了哦'

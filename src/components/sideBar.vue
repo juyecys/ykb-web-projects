@@ -81,7 +81,6 @@ import config from '../config/menu.config.json'
         parent = path.split('/')[1],
         sub = path.split('/')[2],
         pathname='';
-      console.log(path,parent,sub)
       for(let i = 0,l = config.length;i<l;i++){
         if(config[i].isParentMenu){
           let parentMenu = config[i]

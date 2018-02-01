@@ -91,6 +91,9 @@ export const mutations = {
         if(res.data.code === 2000){
           state.wxMenuInfos.wxMenuResults.push(res.data.result)
           state.wxMenuInfos.wxMenuPageInfo.totalCount++
+          Toast.success({
+            msg:'新增菜单成功！'
+          })
           //window.refl
         }else{
           withNoAuthority(res.data.code+" "+res.data.desc,res.data.code)
@@ -129,6 +132,9 @@ export const mutations = {
           for(let i=wxMenuResults.length-1;i>=0;i--){
             if(wxMenuResults[i].id === res.data.result.id){
               wxMenuResults.splice(i,1,res.data.result)
+              Toast.success({
+                msg:'修改菜单成功！'
+              })
               break;
             }
           }
