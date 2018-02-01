@@ -37,7 +37,8 @@
         if(this.user !== '' && this.passwd !== ''){
           this.$store.dispatch('toLogin',{user:this.user,passwd:this.passwd,cb:(state=true)=>{
             if(state){
-              if(window.sessionStorage.getItem('loginToPage') !== null || window.sessionStorage.getItem('loginToPage')!==''){
+              console.log(window.sessionStorage.getItem('loginToPage'))
+              if(window.sessionStorage.getItem('loginToPage') !== null && window.sessionStorage.getItem('loginToPage')!==''){
                 this.$router.push({
                   name:window.sessionStorage.getItem('loginToPage')
                 })
