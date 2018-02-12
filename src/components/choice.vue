@@ -1,8 +1,8 @@
 <template>
   <div class="choice">
     <div class="choiceContainer" v-if="type!=='switch'">
-      <label v-for="(item,index) in choiceDatas"  :for="item.value+'_'+type" :class="type+'_label'">
-        <input :name="name" :type="type" :value="item.value" :id="item.value+'_'+type" @change="inputChange(type,dataSource,index,name,item.value)"/>
+      <label v-for="(item,index) in choiceDatas"  :for="item.value+'_'+name" :class="type+'_label'">
+        <input :name="name" :type="type" :value="item.value" :id="item.value+'_'+name" :checked="item.status?'checked':''" @change="inputChange(type,index,name,item)"/>
         <i :class="type+'_i'"></i>{{item.name}}
       </label>
     </div>
@@ -27,6 +27,10 @@
         type:String,
         default:'radio'
       },
+      checked:{
+        type:String,
+        default:''
+      },
       name:{
         type:String,
         default:''
@@ -39,10 +43,6 @@
         type:String,
         default:''
       },
-      dataSource:{
-        type:String,
-        default:''
-      }
     },
     data(){
       return{
@@ -50,11 +50,24 @@
       }
     },
     methods:{
-      inputChange(type,dataSource,index,name,item){
+      inputChange(type,index,name,item){
         if(type === 'checkbox'){
-          checkboxArr
+          item.status = !item.status
+          this.choiceDatas.splice(index,1,item)
+          this.$emit('choice-change-checkbox',this.choiceDatas)
+        }else{
+          let choices = this.choiceDatas.slice(0)
+          for(let i=0,len=choices.length;i<len;i++){
+            if(i !== index){
+              choices[i].status = false
+            }else{
+              choices[i].status = true
+            }
+            this.choiceDatas.splice(i,1,choices[i])
+          }
+          this.$emit('choice-change',index,name,item.value)
         }
-        this.$emit('choice-change',dataSource,index,name,item)
+
       }
     }
   }
@@ -133,14 +146,14 @@
       width:12px;
       height:12px;
       border-radius:100%;
-      border:1px solid #f00;
+      border:1px solid #5cb85c;
       position: absolute;
       top:50%;
       left:-20px;
       transform:translate(0,-50%);
     }
     .radio_i{
-      background: #f00;
+      background: #5cb85c;
       width:6px;
       height:6px;
       border-radius:100%;

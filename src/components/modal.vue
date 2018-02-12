@@ -5,8 +5,8 @@
       <slot></slot>
     </div>
     <div class="modalFooter">
-      <div class="makesure" @click="makesure(id)">{{confirmTxt}}</div>
-      <div class="makecancel" @click="cancel(id)" v-show="cancelShow">{{cancelTxt}}</div>
+      <div class="makesure" @click="makesure">{{confirmTxt}}</div>
+      <div class="makecancel" @click="cancel" v-show="cancelShow">{{cancelTxt}}</div>
     </div>
   </div>
 </template>
@@ -73,6 +73,7 @@
     transform:translate(-50%,-200%);
     border-radius:5px;
     z-index:101;
+    margin-bottom:80px;
     p{
       text-align: center;
       font-size:18px;

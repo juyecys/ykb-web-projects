@@ -1,7 +1,7 @@
 <template>
   <div class="searchInput">
-    <input type="text" v-model="value" @keyup="toSearchData"  @focus="showSearchBlock" @blur="hideSearchBlock" :readonly="onlySelect" :style="{'cursor':onlySelect?'pointer':''}">
-    <div class="showSearchData" v-show="inputing">
+    <input type="text" v-model="value" @keyup="toSearchData"  @focus="showSearchBlock" @blur="hideSearchBlock" :readonly="onlySelect" :style="{'cursor':onlySelect?'pointer':'','background':canEdit?'':'#eee'}">
+    <div class="showSearchData" v-show="inputing && canEdit">
       <ul>
         <li v-for="(item,index) in datas" @click="choiceThisItem(item,index)">{{item}}</li>
       </ul>
@@ -31,6 +31,10 @@
         type:Boolean,
         default:false
       },
+      canEdit:{
+        type:Boolean,
+        default:true
+      },
       searchkey:{
         type:String,
         default:''
@@ -52,13 +56,13 @@
         this.value = item
         this.$emit('update:searchkey',this.searchKeyValue[index])
         this.$emit('update:value',this.value)
-        this.$emit('value-change',this.value)
+        this.$emit('valueChange',this.value)
         this.inputing = false
       },
       hideSearchBlock(){
         if(!this.onlySelect){
           this.$emit('update:value',this.value)
-          this.$emit('value-change',this.value)
+          this.$emit('valueChange',this.value)
         }
         if(this.datas.length === 0){
           this.inputing = false
@@ -69,9 +73,11 @@
         }
       },
       showSearchBlock(){
-        setTimeout(()=>{
-          this.inputing = true
-        },300)
+        if(this.canEdit){
+            setTimeout(()=>{
+              this.inputing = true
+          },300)
+        }
 
       },
       toSearchData(){

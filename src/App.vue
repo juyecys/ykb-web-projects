@@ -53,6 +53,9 @@ export default {
   @import 'assets/css/base.less';
   @import 'assets/css/mylayers.less';
 #app {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
   .container{
     margin:0;
     transition:margin-left .5s ease;

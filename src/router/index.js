@@ -7,6 +7,7 @@ import ChannelGroup from '../views/wechat/channelGroup'
 import ChannelQrcode from '../views/wechat/channelQrcode'
 import ChannelUsers from '../views/wechat/channelUsers'
 import Wxmenu from '../views/wechat/wxmenu'
+import MessageForWxFollow from '../views/wechat/messageForWxFollow'
 //system
 import Authority from '../views/system/authority';
 import menuManage from '../views/system/menuManage';
@@ -50,6 +51,11 @@ export default new Router({
       path: '/wechat/channelUsers',
       name: 'channelUsers',
       component: ChannelUsers
+    },
+    {
+      path: '/wechat/messageForWxFollow',
+      name: 'messageForWxFollow',
+      component: MessageForWxFollow
     },
     {
       path: '/system/authority',

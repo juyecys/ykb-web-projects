@@ -43,19 +43,50 @@ export const mutations = {
         })
   },
   //渠道二维码增删改查
-  [types.ADDCHANNEL](state,{name,code}){
-    axios.post('/ykb/mg/private/wechat/qrcode',{channels:name,scene:code})
+  [types.ADDCHANNEL](state,{id,name,code,sendSubscribeMessage,sendChannelMessage}){
+    console.log(id,name,code,sendSubscribeMessage,sendChannelMessage)
+    let data = {
+      channels:name,
+      send_subscribe_message:sendSubscribeMessage
+      ,send_channel_message:sendChannelMessage
+    },isadd = true
+    if(code !== ''){
+      data.scene = code
+    }
+    if(id !== ''){
+      data.id = id
+      isadd = false
+    }
+    console.log(state,'-----------------')
+    axios.post('/ykb/mg/private/wechat/qrcode',data)
       .then((res)=>{
         if(res.data.code === 2000){
           console.log(res.data)
           let results = res.data.result
-          state.qrcodeInfos.qrcodeResults.push(res.data.result)
-          state.qrcodeInfos.qrcodePageInfo.totalCount++
+          if(isadd){
+            state.qrcodeInfos.qrcodePageInfo.totalCount++
+            state.qrcodeInfos.qrcodeResults.push(results)
+            Toast.success({
+              msg:'渠道二维码信息已经添加了'
+            })
+          }else{
+            let qrcodeResults = state.qrcodeInfos.qrcodeResults
+            for(let i=qrcodeResults.length-1;i>=0;i--){
+              if(results.id === qrcodeResults[i].id ){
+                state.qrcodeInfos.qrcodeResults.splice(i,1,results)
+                Toast.success({
+                  msg:'渠道二维码信息已经修改了'
+                })
+                break;
+              }
+            }
+          }
         }else{
           withNoAuthority(res.data.code+" "+res.data.desc,res.data.code)
         }
       }).catch((error)=>{
-      withNoAuthority(error,state.hadLogin)
+        console.log(error)
+        withNoAuthority(error,state.hadLogin)
     })
   },
   [types.GETCHANNELs](state,{nowPage,pageSize}){
@@ -82,6 +113,22 @@ export const mutations = {
       }).catch((error)=>{
       withNoAuthority(error,state.hadLogin)
     })
+  },
+  /*获取该渠道扫码后的微信发送的消息*/
+  [types.GETTHISCHANNELWXMESSAGE](state,{type,scene}){
+    axios.get('/ykb/mg/private/message/?type='+type+'&qrCodeScene='+scene)
+      .then(res=>{
+        if(res.data.code === 2000){
+          console.log(res)
+          state.channelWxMessages = res.data.result
+          console.log(state.channelWxMessages)
+        }else{
+          withNoAuthority(res.data.code+" "+res.data.desc,res.data.code)
+        }
+      })
+      .catch(error=>{
+        withNoAuthority(error,state.hadLogin)
+      })
   },
 
   //微信菜单增删改查,生成菜单
@@ -216,6 +263,120 @@ export const mutations = {
       withNoAuthority(error,state.hadLogin)
     })
   },
+
+  /*关注公众号后消息操作*/
+  [types.SAVETHISMESSAGE](state,{obj}){
+    console.log(obj,'-----------------')
+    axios.post('/ykb/mg/private/message/',obj)
+         .then(res=>{
+           if(res.data.code === 2000){
+             console.log(res)
+           }else{
+             withNoAuthority(res.data.code+" "+res.data.desc,res.data.code)
+           }
+         })
+      .catch(error=>{
+        withNoAuthority(error,state.hadLogin)
+      })
+  },
+  [types.GETWXMESSAGES](state,type){
+    axios.get('/ykb/mg/private/message/?type='+type)
+      .then(res=>{
+        if(res.data.code === 2000){
+          console.log(res)
+          state.wxMessages = res.data.result
+          console.log(state.wxMessages)
+        }else{
+          withNoAuthority(res.data.code+" "+res.data.desc,res.data.code)
+        }
+      })
+      .catch(error=>{
+        withNoAuthority(error,state.hadLogin)
+      })
+  },
+  [types.DELETETHISMESSAGE](state,{id,messages}){
+    axios.post('/ykb/mg/private/message/delete',{id:id})
+      .then(res=>{
+        if(res.data.code === 2000){
+          for(let i=messages.length-1;i>=0;i--){
+            if(messages[i].id === id){
+              messages.splice(i,1)
+              Toast.success({
+                msg:'删除消息成功！'
+              })
+              break;
+            }
+          }
+        }else{
+          withNoAuthority(res.data.code+" "+res.data.desc,res.data.code)
+        }
+      })
+      .catch(error=>{
+        withNoAuthority(error,state.hadLogin)
+      })
+  },
+
+  /*查询测试关注公众号后发送消息的人的openid*/
+  [types.CHECKOUTUSER](state,open_id){
+    axios.get('/ykb/mg/private/user/?openId='+open_id)
+         .then(res=>{
+           console.log(res)
+           if(res.data.code === 2000){
+             if(res.data.result.length >0){
+               state.testMessagesPeople = res.data.result[0].nick_name
+             }else{
+               Toast.error({
+                 msg:'没找到对应的openId的微信用户'
+               })
+             }
+           }
+         })
+  },
+/*发送关注公众号后的消息给测试人员*/
+  [types.TOSENDMESSAGETOSOMEONE](state,{open_id,type,qr_code_scene}){
+    let data = {
+      open_id:open_id,
+      type:type
+    }
+    if(qr_code_scene !== '' ){
+      data.qr_code_scene = qr_code_scene
+    }
+    axios.post('/ykb/mg/private/message/send',data)
+      .then(res=>{
+        if(res.data.code === 2000){
+          console.log(res)
+          Toast.success({
+            msg:'发送消息成功！'
+          })
+        }else{
+          withNoAuthority(res.data.code+" "+res.data.desc,res.data.code)
+        }
+      })
+      .catch(error=>{
+        withNoAuthority(error,state.hadLogin)
+      })
+  },
+
+
+  /*上传图片*/
+  [types.UPLOADIMAGE](state,{data}){
+    axios.post('/ykb/mg/private/file/upload',data)
+         .then(res=>{
+            console.log(res)
+           if(res.data.code === 2000){
+              state.uploadImageUrl = res.data.result
+           }else{
+             withNoAuthority(res.data.code+" "+res.data.desc,res.data.code)
+           }
+
+         })
+         .catch(error=>{
+            console.log(error)
+           withNoAuthority(error,state.hadLogin)
+         })
+  },
+
+
   //测试
   [types.TEST](state){
     axios.get('/ykb/mg/private/user/test')

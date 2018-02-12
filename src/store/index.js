@@ -29,7 +29,11 @@ const state = {
   wxMenuInfos:{
     wxMenuResults:[],
     wxMenuPageInfo:{}
-  }
+  },
+  wxMessages:[],
+  channelWxMessages:[],
+  testMessagesPeople:'',
+  uploadImageUrl:''
 }
 
 export default new Vuex.Store({

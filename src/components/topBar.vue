@@ -43,6 +43,7 @@
     position:fixed;
     top:0;
     box-shadow:0 1px 10px #999;
+    z-index:90;
     .menuBtn{
       width:32px;
       height:32px;
