@@ -2,7 +2,7 @@
   <div id="index">
     <div class="welcome">
       <p>欢迎进入易康保后台管理系统</p>
-      <img src="../../static/images/123.gif" alt="">
+      <img src="static/images/123.gif" alt="">
     </div>
 
   </div>

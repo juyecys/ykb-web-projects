@@ -19,14 +19,14 @@ exports.cssLoaders = function (options) {
       minimize: process.env.NODE_ENV === 'production',
       sourceMap: options.sourceMap
     }
-  }  
+  }
   const sassLoader = {
     loader: 'sass-loader',
     options: {
       minimize: process.env.NODE_ENV === 'production',
       sourceMap: options.sourceMap
     }
-  }  
+  }
   const lessLoader = {
     loader: 'less-loader',
     options: {

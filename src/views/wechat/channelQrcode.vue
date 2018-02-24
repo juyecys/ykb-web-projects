@@ -11,9 +11,16 @@
           <span>渠道编码</span>
           <input type="text" v-model="inquiryChannelCode" placeholder="渠道编码只能是数字/大小写字母/_/-">
         </div>
+        <div class="channelItem">
+          <span>渠道分组</span>
+          <div class="searchContainer">
+            <search-input :value.sync="channelGroupName" :searchkey.sync="channelGroupId" :searchData="allChannelGroupList.channelGroupName" :searchKeyValue="allChannelGroupList.channelGroupId" @valueChange="searchInputValueChange" :onlySelect="true"></search-input>
+          </div>
+        </div>
+
       </div>
     </modal>
-    <modal :show="showInquiryModal" @makesure="addChannel(1)" @cancel="cancel" confirmTxt="确定" title="查询渠道二维码" id="showModal" :width="1000">
+    <modal :show="showInquiryModal" @makesure="addChannel(1)" @cancel="cancel" confirmTxt="确定" title="查询渠道二维码" id="showInquiryModal" :width="1000">
       <div class="muchContainer">
         <div class="sectionHeader">
           <div :class="['headerItem',showChannelInfo?'action':'']" @click="changeShowChannelInfo(true)">基本信息</div>
@@ -29,6 +36,12 @@
               <div class="channelItem">
                 <span>渠道编码</span>
                 <input type="text" v-model="inquiryChannelCode" placeholder="渠道编码只能是数字/大小写字母/_/-" :disabled="updateChannel">
+              </div>
+              <div class="channelItem">
+                <span>渠道分组</span>
+                <div class="searchContainer">
+                  <search-input :canEdit="true" :value.sync="channelGroupName" :searchkey.sync="channelGroupId" :searchData="allChannelGroupList.channelGroupName" :searchKeyValue="allChannelGroupList.channelGroupId" @valueChange="searchInputValueChange" :onlySelect="true"></search-input>
+                </div>
               </div>
             </div>
           </div>
@@ -60,7 +73,7 @@
       <div class="ModalForShowTdValue">
         <div class="tdValue" v-if="showTdIndex === 2">
           <img :src="tdObject.qrcodeUrl" alt="">
-          <div class="tips">请右键，图片另存为或者复制图片</div>
+          <div class="tips">请右键，图片另存为或者复制图片{{tdObject.qrcodeUrl}}</div>
           <input type="text" :value="tdObject.qrcodeUrl" id="qrcodeUrl">
         </div>
         <div class="tdValue" v-if="showTdIndex === 3">
@@ -72,7 +85,7 @@
     <!--二维码信息-->
     <itable
       :ths="['渠道编码','渠道名','渠道二维码','关注用户数','渠道分组','最后修改人','最后修改时间','操作']"
-      :tds="['scene','channels','#查看#','#查看#','#暂无#','updatedBy','updatedDate','##{../../static/images/write.png}##']"
+      :tds="['scene','channels','#查看#','#查看#','channel_group_name','updatedBy','updatedDate','##{static/images/write.png}##']"
       :tableData="qrcodeResults"
       :totalPage="qrcodePageInfo.totalPage"
       :totalCount="qrcodePageInfo.totalCount"
@@ -109,16 +122,18 @@
   import modal from '../../components/modal'
   import itable from '../../components/itable'
   import choice from '../../components/choice'
+  import searchInput from '../../components/searchInput'
   import Toast from '../../components/toast'
   import maskLayer from '../../components/maskLayer'
   export default {
     name:'channelQrcode',
     components:{
-      operationBtn,modal,itable,messageForWx,choice
+      operationBtn,modal,itable,messageForWx,choice,searchInput
     },
     mounted(){
       if(this.$store.state.qrcodeInfos.qrcodePageInfo.nowPage !== 1){
         this.$store.dispatch('getChannels',{nowPage:1,pageSize:10})
+        this.$store.dispatch('getAllChannelGroup')
       }
       //this.$store.dispatch('getWxMessages','CHANNEL')
     },
@@ -219,10 +234,20 @@
       },
       uploadImageUrl(){
         return this.$store.state.uploadImageUrl
+      },
+      allChannelGroupList(){
+        let channelGroupId = [],channelGroupName=[],allChannelGroupList = this.$store.state.allChannelGroupList
+        for(let i=0,len=allChannelGroupList.length;i<len;i++){
+          channelGroupId.push(allChannelGroupList[i].id)
+          channelGroupName.push(allChannelGroupList[i].name)
+        }
+        return {channelGroupId,channelGroupName}
       }
     },
     data(){
       return {
+        channelGroupId:'',
+        channelGroupName:'',
         updateChannel:false,//是否是更新渠道信息，是就禁止更改渠道编码的输入
         testPeopleOpenId:'',//给测试人员发送渠道的推送消息的openid
         showTestMessageModal:false,//显示查找测试人员openid的模态窗
@@ -236,7 +261,7 @@
           name:'渠道消息模板(关注时或已关注时扫码)',
           value:'channel',
           status:false
-        },],
+        }],
         messages:[],//消息列表
         channelBtns:[{
           name:'新增渠道消息',
@@ -268,6 +293,9 @@
       }
     },
     methods:{
+      searchInputValueChange(){
+        console.log(this.channelGroupId,this.channelGroupName)
+      },
       //上传图片
       toUploadImage(){
         console.log(123)
@@ -516,6 +544,9 @@
           this.inquiryChannelName = qrcodeResult.channels
           this.inquiryChannelCode = qrcodeResult.scene
           this.inquiryChannelId = qrcodeResult.id
+          this.channelGroupId = qrcodeResult.hasOwnProperty('channel_group_id')?qrcodeResult.channel_group_id:''
+          this.channelGroupName = qrcodeResult.hasOwnProperty('channel_group_name')?qrcodeResult.channel_group_name:''
+          console.log(qrcodeResult)
           this.sengMsgFrom[0].status = qrcodeResult.send_subscribe_message
           this.sengMsgFrom[1].status = qrcodeResult.send_channel_message
           console.log(this.inquiryChannelId,'this.inquiryChannelId')
@@ -540,8 +571,8 @@
       showTdValue(index,_index){
         if(_index === 2){
           this.showTdIndex = 2
-          console.log(this.qrcodeResults[index].qrCodeUrl)
-          this.$set(this.tdObject,'qrcodeUrl',this.qrcodeResults[index].qrCodeUrl)
+          console.log(this.qrcodeResults[index],index,this.qrcodeResults[index].qr_code_url)
+          this.$set(this.tdObject,'qrcodeUrl',this.qrcodeResults[index].qr_code_url)
           this.$set(this.tdObject,'qrcodeName',this.qrcodeResults[index].channels)
           this.$set(this.tdObject,'qrcodeCount',this.qrcodeResults[index].scanTime)
           this.tdTitle = '查看渠道二维码'
@@ -575,13 +606,27 @@
         this.updateChannel = false
         this.inquiryChannelName=''
         this.inquiryChannelCode=''
+        this.channelGroupId = ''
+        this.channelGroupName = ''
       },
       //新增或编辑渠道信息
       addChannel(type){
         let self = this,
             channelName = self.inquiryChannelName,
-            channelCode = self.inquiryChannelCode
-        console.log(self,channelName,channelCode)
+            channelCode = self.inquiryChannelCode,
+            channelGroupId = self.channelGroupId,
+            channelGroupName = ''
+        if(channelGroupId !== ''){
+          let channelGroupIdArr = this.allChannelGroupList.channelGroupId
+          for(let i=channelGroupIdArr.length-1;i>=0;i--){
+            console.log(channelGroupIdArr[i] , channelGroupId)
+            if(channelGroupIdArr[i] === channelGroupId){
+              channelGroupName = this.allChannelGroupList.channelGroupName[i]
+              break;
+            }
+          }
+        }
+        console.log(self,channelName,channelCode,channelGroupId,channelGroupName)
         if(channelName!=='' && channelCode!==''){
           if(/[^0-9a-zA-Z_-]/.test(channelCode)){
             Toast.error({
@@ -591,10 +636,11 @@
           }
           console.log(123)
           if(type === 0){//0意味着新增的
-            self.$store.dispatch('addChannel',{id:'',name:channelName,code:channelCode,sendSubscribeMessage:true,sendChannelMessage:false})
+            self.$store.dispatch('addChannel',{id:'',channel_group_id:channelGroupId,channel_group_name:channelGroupName,name:channelName,code:channelCode,sendSubscribeMessage:true,sendChannelMessage:false})
             this.showModal = false
           }else{
-            self.$store.dispatch('addChannel',{id:this.inquiryChannelId,name:channelName,code:channelCode,sendSubscribeMessage:this.sengMsgFrom[0].status,sendChannelMessage:this.sengMsgFrom[1].status})
+            console.log({id:this.inquiryChannelId,channel_group_id:channelGroupId,channel_group_name:channelGroupName,name:channelName,code:channelCode,sendSubscribeMessage:self.sengMsgFrom[0].status,sendChannelMessage:self.sengMsgFrom[1].status})
+            self.$store.dispatch('addChannel',{id:this.inquiryChannelId,channel_group_id:channelGroupId,channel_group_name:channelGroupName,name:channelName,code:channelCode,sendSubscribeMessage:self.sengMsgFrom[0].status,sendChannelMessage:self.sengMsgFrom[1].status})
             this.showInquiryModal = false
           }
           maskLayer.hide()
@@ -666,9 +712,13 @@
       text-align:center;
       .channelItem{
         margin:20px 0;
+        display:flex;
+        justify-content:center;
+        align-items:center;
         span{
           font-size:14px;
           margin-right:10px;
+          width:80px;
         }
         input{
           width:300px;
@@ -679,6 +729,9 @@
           border:none;
           border:1px solid #ccc;
           padding: 0 10px;
+        }
+        .searchContainer{
+          width:300px;
         }
       }
     }

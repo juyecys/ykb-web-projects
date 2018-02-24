@@ -56,7 +56,7 @@
     </modal>
     <itable
       :ths="['菜单名称','菜单级别','菜单序号','菜单类型','父菜单','编码','URL','操作']"
-      :tds="['name','levelName','sequence','typeName','parentName','key','#查看url#','##[../../static/images/write.png,../../static/images/delete.png]##']"
+      :tds="['name','levelName','sequence','typeName','parentName','key','#查看url#','##[static/images/write.png,static/images/delete.png]##']"
       :tableData="wxMenuResults"
       :totalPage="wxMenuPageInfo.totalPage"
       :totalCount="wxMenuPageInfo.totalCount"

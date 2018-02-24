@@ -33,7 +33,13 @@ const state = {
   wxMessages:[],
   channelWxMessages:[],
   testMessagesPeople:'',
-  uploadImageUrl:''
+  uploadImageUrl:'',
+  channelGroupList:{
+    result:[],
+    pageInfo:[]
+  },
+  thisChannelGroupList:[],
+  allChannelGroupList:[]
 }
 
 export default new Vuex.Store({

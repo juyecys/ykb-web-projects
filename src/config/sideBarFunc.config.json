@@ -1,73 +1,20 @@
 [{
-  "menuName":"系统管理",
-  "menuCode":"system",
-  "menuResource":"",
-  "sequence":1,
-  "isParentMenu":true
-},{
-  "menuName":"用户模块",
-  "menuCode":"users",
-  "menuResource":"",
-  "sequence":0,
-  "isParentMenu":true
-},{
   "menuName":"微信模块",
   "menuCode":"wechat",
   "menuResource":"",
   "sequence":0,
   "isParentMenu":true
 },{
-  "menuName":"标签管理",
-  "menuCode":"label",
-  "menuResource":"",
-  "sequence":0,
-  "isParentMenu":true
-},{
-  "menuName":"菜单管理",
-  "menuCode":"menuManage",
-  "menuResource":"menuManage",
-  "sequence":0,
-  "isParentMenu":false,
-  "parentMenuCode":"system"
-},{
-  "menuName":"角色管理",
-  "menuCode":"role",
-  "menuResource":"role",
-  "sequence":0,
-  "isParentMenu":false,
-  "parentMenuCode":"system"
-},{
-  "menuName":"权限管理",
-  "menuCode":"authority",
-  "menuResource":"authority",
-  "sequence":0,
-  "isParentMenu":false,
-  "parentMenuCode":"system"
-},{
-  "menuName":"用户管理",
-  "menuCode":"users",
-  "menuResource":"users",
-  "sequence":0,
-  "isParentMenu":false,
-  "parentMenuCode":"system"
-},{
-  "menuName":"用户信息",
-  "menuCode":"usersInfo",
-  "menuResource":"usersInfo",
-  "sequence":0,
-  "isParentMenu":false,
-  "parentMenuCode":"users"
-},{
-  "menuName":"公众号菜单",
-  "menuCode":"wxmenu",
-  "menuResource":"wxmenu",
+  "menuName":"渠道分组",
+  "menuCode":"channelGroup",
+  "menuResource":"channelGroup",
   "sequence":0,
   "isParentMenu":false,
   "parentMenuCode":"wechat"
 },{
-  "menuName":"自动回复",
-  "menuCode":"autoReply",
-  "menuResource":"",
+  "menuName":"公众号菜单",
+  "menuCode":"wxmenu",
+  "menuResource":"wxmenu",
   "sequence":0,
   "isParentMenu":false,
   "parentMenuCode":"wechat"
@@ -79,10 +26,23 @@
   "isParentMenu":false,
   "parentMenuCode":"wechat"
 },{
-  "menuName":"渠道用户统计",
-  "menuCode":"channelUsers",
-  "menuResource":"channelUsers",
+  "menuName":"关注公众号后消息",
+  "menuCode":"messageForWxFollow",
+  "menuResource":"messageForWxFollow",
   "sequence":0,
   "isParentMenu":false,
   "parentMenuCode":"wechat"
+},{
+  "menuName":"用户模块",
+  "menuCode":"users",
+  "menuResource":"",
+  "sequence":0,
+  "isParentMenu":true
+},{
+  "menuName":"用户信息",
+  "menuCode":"usersInfo",
+  "menuResource":"usersInfo",
+  "sequence":0,
+  "isParentMenu":false,
+  "parentMenuCode":"users"
 }]

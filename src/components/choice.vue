@@ -7,7 +7,7 @@
       </label>
     </div>
     <div class="switchContainer" v-else>
-      <input type="checkbox" :id="'switch_'+switchName" :name="switchName" />
+      <input type="checkbox" :id="'switch_'+switchName" :name="switchName" :checked="switchBool?'checked':''" @change="switchChange" />
       <label :for="'switch_'+switchName" class="switch_label"></label>
     </div>
   </div>
@@ -35,6 +35,12 @@
         type:String,
         default:''
       },
+      switchData:{
+        type:Array,
+        default:()=>{
+          return []
+        }
+      },
       switchBool:{
         type:Boolean,
         default:false
@@ -50,6 +56,9 @@
       }
     },
     methods:{
+      switchChange(){
+        this.$emit('choice-change-switch',!this.switchBool)
+      },
       inputChange(type,index,name,item){
         if(type === 'checkbox'){
           item.status = !item.status

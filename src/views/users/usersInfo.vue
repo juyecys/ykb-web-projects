@@ -1,6 +1,6 @@
 <template>
   <div class="usersInfo">
-    <operationBtn :btns="btns"></operationBtn>
+    <!--<operationBtn :btns="btns"></operationBtn>-->
     <modal :show.sync="showModal" title="查询用户信息" @makesure="inquiryUserInfo" @cancel="cancel" id="showModal">
       <div class="inquiryContainer">
         <div class="datePicker">
@@ -20,7 +20,7 @@
     </modal>
     <itable
       :ths="['名称','openId','二维码编码','创建日期']"
-      :tds="['name','openId','qrCodeScene','createdDate']"
+      :tds="['nick_name','open_id','qr_code_scene','createdDate']"
       :tableData="usersResults"
       :totalPage="usersPageInfo.totalPage"
       :totalCount="usersPageInfo.totalCount"

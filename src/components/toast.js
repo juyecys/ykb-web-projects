@@ -85,7 +85,7 @@ const Toast = {
       delete:false
     })
     let toastNode =  `<div class="toastContainer ${this.options.type} ">
-                      <i><img src="../../static/images/${this.options.type}.png" alt=""></i>
+                      <i><img src="static/images/${this.options.type}.png" alt=""></i>
                       <span>${this.options.msg}</span>
                       </div>`,
       toastid = `toast${this.count}`,

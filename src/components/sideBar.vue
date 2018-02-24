@@ -8,7 +8,7 @@
         <ul>
           <li v-if="functionItems.length>0"  v-for="item in functionItems" @click="showChild(item)" :path="item.menuResource" class="menu">
             <div :class="item.action?'funcItem actionPatient':'funcItem'" :pagename="'/'+item.menuName"  >
-              <i><img :src="'../../static/images/'+item.menuCode+'.png'" alt="" /></i>
+              <i><img :src="'./static/images/'+item.menuCode+'.png'" alt="" /></i>
               <span>{{item.menuName}}</span>
             </div>
             <div v-if="item.subMenu.length >0" class="funcItemChild" v-show="item.action">
@@ -32,7 +32,7 @@
       <div class="menuIcons">
         <ul>
           <li v-if="functionItems.length>0" v-for="item in functionItems" :path="item.menuResource"  @mouseenter="showChildMenu(item.menuCode)" @mouseleave="hideChildMenu(item.menuCode)">
-            <i ><img :src="'../../static/images/'+item.menuCode+'.png'" alt=""></i>
+            <i ><img :src="'./static/images/'+item.menuCode+'.png'" alt=""></i>
             <div class="childMenu"  :id="item.menuCode" >
               <div class="parentMenuTitle">{{item.menuName}}</div>
               <ul v-if="item.subMenu.length >0">

@@ -4,7 +4,7 @@
       总记录数为：{{totalCount}}
     </div>
     <div class="tableContainer">
-      <table>
+      <table :style="{'min-width':minTableWidth+'px'}">
         <thead>
         <tr>
           <th v-for="(th,index) in ths" :class="thClass[index]">{{th}}</th>
@@ -22,7 +22,7 @@
       </table>
     </div>
     <!--分页-->
-    <div class="pagination">
+    <div class="pagination" v-if="toPagination">
       <div class="pageing">
         <ul :style="{'width':(totalPage*30)+'px'}" ref="pageUl">
           <li v-for="item in totalPage" @click="selectPage(item)" :class="item === nowpage?'action':''">{{item}}</li>
@@ -46,6 +46,14 @@
   export default {
     name:'itable',
     props:{
+      toPagination:{
+        type:Boolean,
+        default:true
+      },
+      minTableWidth:{
+        type:Number,
+        default:800
+      },
       totalCount:{
         type:Number,
         default:0

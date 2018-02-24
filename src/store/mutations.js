@@ -13,6 +13,18 @@ let withNoAuthority = (error,errorCode)=>{
   console.log(router.history.current.name)
 }
 export const mutations = {
+  [types.ERRORCODE](state,{error,code}){
+    Toast.error({msg:error})
+    if(code === "4001"){
+      router.push({
+        name:'login'
+      })
+    }
+  },
+  [types.ERRORSTATUS](state,error){
+    Toast.error({msg:error})
+  },
+
   //[type.xxx](state,{params}){}
   [types.PATHNAME](state,{name}){
     state.pathName = name
@@ -43,13 +55,17 @@ export const mutations = {
         })
   },
   //渠道二维码增删改查
-  [types.ADDCHANNEL](state,{id,name,code,sendSubscribeMessage,sendChannelMessage}){
-    console.log(id,name,code,sendSubscribeMessage,sendChannelMessage)
+  [types.ADDCHANNEL](state,{id,channel_group_id,channel_group_name,name,code,sendSubscribeMessage,sendChannelMessage}){
+    console.log(id,channel_group_id,channel_group_name,name,code,sendSubscribeMessage,sendChannelMessage)
     let data = {
       channels:name,
-      send_subscribe_message:sendSubscribeMessage
-      ,send_channel_message:sendChannelMessage
+      send_subscribe_message:sendSubscribeMessage,
+      send_channel_message:sendChannelMessage
     },isadd = true
+    if(channel_group_id !== ''){
+      data.channel_group_id = channel_group_id
+      data.channel_group_name = channel_group_name
+    }
     if(code !== ''){
       data.scene = code
     }
@@ -114,6 +130,12 @@ export const mutations = {
       withNoAuthority(error,state.hadLogin)
     })
   },
+  //渠道二维码，获取所有的渠道分组
+  [types.ALLCHANNELGROUPLIST](state,data){
+    console.log(data)
+    state.allChannelGroupList = data
+  },
+
   /*获取该渠道扫码后的微信发送的消息*/
   [types.GETTHISCHANNELWXMESSAGE](state,{type,scene}){
     axios.get('/ykb/mg/private/message/?type='+type+'&qrCodeScene='+scene)
@@ -356,7 +378,49 @@ export const mutations = {
         withNoAuthority(error,state.hadLogin)
       })
   },
-
+//渠道分组，获取渠道分组列表
+  [types.GETCHANNELGROUP](state,data){
+    console.log(data)
+    state.channelGroupList.result = data.result
+    state.channelGroupList.pageInfo = {
+      nowPage:data.nowPage,
+      pageSize:data.pageSize,
+      start:data.start,
+      totalCount:data.totalCount,
+      totalPage:data.totalPage
+    }
+  },
+//渠道分组，新增渠道分组
+  [types.ADDCHANNELGROUP](state,data){
+    console.log(data)
+    state.channelGroupList.result.unshift(data)
+    state.channelGroupList.pageInfo = {
+      nowPage:data.nowPage,
+      pageSize:data.pageSize,
+      start:data.start,
+      totalCount:data.totalCount,
+      totalPage:data.totalPage
+    }
+  },
+  //渠道分组，编辑渠道分组
+  [types.EDITCHANNELGROUP](state,data){
+    console.log(data)
+    let result  = state.channelGroupList.result
+    for(let i=result.length-1;i>=0;i--){
+      if(result[i].id === data.id){
+        result.splice(i,1,data)
+        Toast.success({
+          msg:'修改渠道分组信息成功'
+        })
+        break;
+      }
+    }
+  },
+  //渠道分组，编辑渠道分组
+  [types.GETTHISCHANNELGROUPLIST](state,data){
+    console.log(data,'GETTHISCHANNELGROUPLIST')
+    state.thisChannelGroupList = data
+  },
 
   /*上传图片*/
   [types.UPLOADIMAGE](state,{data}){
@@ -375,15 +439,4 @@ export const mutations = {
            withNoAuthority(error,state.hadLogin)
          })
   },
-
-
-  //测试
-  [types.TEST](state){
-    axios.get('/ykb/mg/private/user/test')
-         .then((res)=>{
-            console.log(res)
-         }).catch((error)=>{
-            withNoAuthority(error,state.hadLogin)
-         })
-  }
 }

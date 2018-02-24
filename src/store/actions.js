@@ -1,5 +1,5 @@
 import * as types from '../store/mutation-type';
-
+import axios from 'axios';
 export const changePathName = ({commit},name) =>{
   console.log(name)
   commit(types.PATHNAME,{name})
@@ -15,13 +15,29 @@ export const toLogin = ({commit},{user,passwd,cb}) =>{
 }
 
 //渠道二维码增删改查
-export const addChannel = ({commit},{id,name,code,sendSubscribeMessage,sendChannelMessage}) =>{
-  console.log(id,name,code,sendSubscribeMessage,sendChannelMessage)
-  commit(types.ADDCHANNEL,{id,name,code,sendSubscribeMessage,sendChannelMessage})
+export const addChannel = ({commit},{id,channel_group_id,channel_group_name,name,code,sendSubscribeMessage,sendChannelMessage}) =>{
+  console.log(id,channel_group_id,channel_group_name,name,code,sendSubscribeMessage,sendChannelMessage)
+  commit(types.ADDCHANNEL,{id,channel_group_id,channel_group_name,name,code,sendSubscribeMessage,sendChannelMessage})
 }
 
 export const getChannels = ({commit},{nowPage,pageSize}) =>{
   commit(types.GETCHANNELs,{pageSize,nowPage})
+}
+
+//渠道二维码，获取所有的渠道分组
+export const getAllChannelGroup = ({commit}) =>{
+  axios.get('/ykb/mg/private/channelgroup/query')
+    .then(res=>{
+      console.log(res)
+      if(res.data.code === 2000){
+        commit(types.ALLCHANNELGROUPLIST,res.data.result)
+      }else{
+        commit(types.ERRORCODE,{error:res.data.desc,code:res.data.code})
+      }
+    })
+    .catch(error=>{
+      commit(types.ERRORSTATUS,error)
+    })
 }
 
 //微信菜单增删改查,生成菜单
@@ -68,7 +84,82 @@ export const deleteThisMessage = ({commit},{id,messages}) =>{
   console.log('getWxMessages')
   commit(types.DELETETHISMESSAGE,{id,messages})
 }
-
+//渠道分组，获取渠道分组列表
+export const getChannelGroup = ({commit}) =>{
+  axios.get('/ykb/mg/private/channelgroup/')
+    .then(res=>{
+      console.log(res)
+      if(res.data.code === 2000){
+        commit(types.GETCHANNELGROUP,res.data.result)
+      }else{
+        commit(types.ERRORCODE,{error:res.data.desc,code:res.data.code})
+      }
+    })
+    .catch(error=>{
+      commit(types.ERRORSTATUS,error)
+    })
+}
+//渠道分组，新增渠道分组
+export const addChannelGroup = ({commit},data) =>{
+  console.log(data)
+  axios.post('/ykb/mg/private/channelgroup/',data)
+    .then(res=>{
+      console.log(res)
+      if(res.data.code === 2000){
+        commit(types.ADDCHANNELGROUP,res.data.result)
+      }else{
+        commit(types.ERRORCODE,{error:res.data.desc,code:res.data.code})
+      }
+    })
+    .catch(error=>{
+      commit(types.ERRORSTATUS,error)
+    })
+}
+//渠道分组，编辑渠道分组
+export const editChannelGroup = ({commit},data) =>{
+  axios.post('/ykb/mg/private/channelgroup/',data)
+    .then(res=>{
+      console.log(res)
+      if(res.data.code === 2000){
+        commit(types.EDITCHANNELGROUP,res.data.result)
+      }else{
+        commit(types.ERRORCODE,{error:res.data.desc,code:res.data.code})
+      }
+    })
+    .catch(error=>{
+      commit(types.ERRORSTATUS,error)
+    })
+}
+//渠道分组，获取该渠道分组下的渠道信息
+export const getThisChannelGroupList = ({commit},{channel_group_id}) =>{
+  let url = encodeURI('/ykb/mg/private/wechat/qrcode/query?channelGroupId='+channel_group_id)
+  axios.get(url)
+    .then(res=>{
+      console.log(res)
+      if(res.data.code === 2000){
+        commit(types.GETTHISCHANNELGROUPLIST,res.data.result)
+      }else{
+        commit(types.ERRORCODE,{error:res.data.desc,code:res.data.code})
+      }
+    })
+    .catch(error=>{
+      commit(types.ERRORSTATUS,error)
+    })
+}
+//模糊查询渠道分组
+export const inquiryChannelGroupInfo = ({commit},name) =>{
+  axios.get('/ykb/mg/private/channelgroup/query?name='+name)
+    .then(res=>{
+      if(res.data.code === 2000){
+        commit(types.GETCHANNELGROUP,res.data)
+      }else{
+        commit(types.ERRORCODE,{error:res.data.desc,code:res.data.code})
+      }
+    })
+    .catch(error=>{
+      commit(types.ERRORSTATUS,error)
+    })
+}
 
 
 /*查询测试关注公众号后发送消息的人的openid*/

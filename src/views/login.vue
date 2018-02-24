@@ -4,7 +4,7 @@
       <p>欢迎登录易康保管理后台</p>
       <input type="text" placeholder="请输入您的账号" name="" id="user" v-model="user">
       <input :type="isshowpsw?'text':'password'" placeholder="请输入您的密码" name="" id="passwd" v-model="passwd">
-      <i class="passwdIcon" @click="showpsw"><img :src="isshowpsw?'../../static/images/showpsw.png':'../../static/images/hidepsw.png'" alt=""></i>
+      <i class="passwdIcon" @click="showpsw"><img :src="isshowpsw?'static/images/showpsw.png':'static/images/hidepsw.png'" alt=""></i>
       <div class="loginsys" @click="toLogin">
         登录
       </div>

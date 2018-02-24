@@ -1,6 +1,6 @@
 <template>
   <div class="searchInput">
-    <input type="text" v-model="value" @keyup="toSearchData"  @focus="showSearchBlock" @blur="hideSearchBlock" :readonly="onlySelect" :style="{'cursor':onlySelect?'pointer':'','background':canEdit?'':'#eee'}">
+    <input type="text" :placeholder="placeholder" v-model="value" @keyup="toSearchData"  @focus="showSearchBlock" @blur="hideSearchBlock" :readonly="onlySelect" :style="{'cursor':onlySelect?'pointer':'','background':canEdit?'':'#eee'}">
     <div class="showSearchData" v-show="inputing && canEdit">
       <ul>
         <li v-for="(item,index) in datas" @click="choiceThisItem(item,index)">{{item}}</li>
@@ -17,6 +17,10 @@
       }
     },
     props:{
+      placeholder:{
+        type:String,
+        default:'请选择'
+      },
       value:{
         type:String,
         default:''
