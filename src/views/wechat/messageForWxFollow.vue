@@ -50,7 +50,7 @@
     },
     watch:{
       wxMessages(val){
-        console.log(val,'watch')
+        //console.log(val,'watch')
         this.messages = val.slice(0)
       },
       uploadImageUrl(val){
@@ -64,8 +64,9 @@
     computed:{
       wxMessages(){
         let wxMessages = this.$store.state.wxMessages
+        //console.log(wxMessages,'----')
         for(let i=wxMessages.length-1;i>=0;i--){
-          wxMessages[i].canEdit = false
+          //!wxMessages[i].hasOwnProperty('canEdit')&&(wxMessages[i].canEdit = false)
           if(wxMessages[i].status){
             wxMessages[i].radioData = [{
               name:'开启',
@@ -89,7 +90,7 @@
           }
 
           if(wxMessages[i].msg_type === 'text'){
-            wxMessages[i].typeName = '文字消息'
+            wxMessages[i].typeName = '文本消息'
             continue;
           }
           if(wxMessages[i].msg_type === 'image'){
@@ -105,7 +106,7 @@
             continue;
           }
         }
-        console.log(wxMessages)
+        //console.log(wxMessages)
         return wxMessages
       },
       testMessagesPeople(){
@@ -189,13 +190,14 @@
           radioData:[{
             name:'开启',
             value:true,
-            status:false
+            status:true
           },{
             name:'关闭',
             value:false,
-            status:true
+            status:false
           }]
         })
+
       },
       testWxMessages(){
         console.log('预览')
@@ -229,7 +231,7 @@
           case 'text':
             if(item.content === ''){
               Toast.error({
-                msg:'请填写文字消息的内容'
+                msg:'请填写文本消息的内容'
               })
               return
             }
@@ -251,12 +253,6 @@
             if(item.article_list[0].title === ''){
               Toast.error({
                 msg:'请填写图文消息标题'
-              })
-              return
-            }
-            if(item.article_list[0].description === ''){
-              Toast.error({
-                msg:'请填写图文消息摘要'
               })
               return
             }
@@ -322,31 +318,23 @@
         this.messages.splice(index,1,item)
         console.log(this.messages[index],obj)
         this.$store.dispatch('saveThisMessage',{obj})
-        let mes = this.messages.slice(0)
+        /*let mes = this.messages.slice(0)
         this.messages=[]
         this.$nextTick(()=>{
           this.messages = mes.slice(0)
-        })
+        })*/
       },
       cancelEditThisMessage(item,index){
-        item.canEdit = false;
-        this.messages.splice(index,1,item)
-        let mes = this.messages.slice(0)
-        this.messages=[]
-        this.$nextTick(()=>{
-          this.messages = mes.slice(0)
-        })
+        if(item.hasOwnProperty('id')){
+          item.canEdit = false;
+          this.messages.splice(index,1,item)
+        }else{
+          this.messages.splice(index,1)
+        }
       },
       editThisMessage(item,index){
         item.canEdit = true;
         this.messages.splice(index,1,item)
-        let mes = this.messages.slice(0)
-        this.messages=[];//为了触发视图更新
-        this.$nextTick(()=>{
-          this.messages = mes.slice(0)
-          console.log(this.messages)
-        })
-        console.log(this.messages)
       },
       searchInputValueChange(value){
         console.log(value,'searchInputValueChange',this.messages)

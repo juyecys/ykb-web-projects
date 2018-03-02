@@ -67,7 +67,7 @@
       operationBtn,modal,itable,choice
     },
     mounted(){
-      this.$store.dispatch('getChannelGroup')
+      this.$store.dispatch('getChannelGroup',{pageSize:10,nowPage:1})
       //this.addChannelGroup()
     },
     computed:{
@@ -99,14 +99,14 @@
         btns:[{
           name:'新增',
           event:this.addChannelGroup
-        },{
+        }/*,{
           name:'查询',
           style:'successBtn',
           event:this.inQuiryChannelGroup
         },{
           name:'查询全部',
           event:this.inQuiryAllChannelGroup
-        }],
+        }*/],
         showInquiryModal:false,
         showModal:false,
         showChannelGroupListModal:false,
@@ -226,12 +226,12 @@
       //改变页大小
       changePageSize(size){
         console.log(size)
-        //this.$store.dispatch('getChannels',{pageSize:size,nowPage:1})
+        this.$store.dispatch('getChannelGroup',{pageSize:size,nowPage:1})
       },
       //跳转下一页
       toNextPage(nextPage){
         console.log(nextPage)
-        //this.$store.dispatch('getChannels',{pageSize:this.qrcodePageInfo.pageSize,nowPage:nextPage})
+        this.$store.dispatch('getChannelGroup',{pageSize:this.channelGroupPageInfo.pageSize,nowPage:nextPage})
       },
     }
   }

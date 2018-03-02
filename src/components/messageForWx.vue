@@ -23,7 +23,7 @@
           </div>
           <div class="rightPart">
             <div class="addPicture">
-              <img src="../../static/images/add.png" alt="" class="addImage" >
+              <img src="static/images/add.png" alt="" class="addImage" >
             </div>
           </div>
         </div>
@@ -34,7 +34,7 @@
             </div>
             <div class="rightPart">
               <div class="addPicture">
-                <img :src="message.article_list[0].pic_url!==''?message.article_list[0].pic_url:'../../static/images/add.png'" alt="" class="addImage" @click="uploadImage(0)">
+                <img :src="message.article_list[0].pic_url!==''?message.article_list[0].pic_url:'static/images/add.png'" alt="" class="addImage" @click="uploadImage(0)">
                 <span class="addImageTips">插入图片(推荐900X500像素)</span>
               </div>
             </div>
@@ -80,7 +80,7 @@
               </div>
               <div class="rightPart">
                 <div class="addPicture">
-                  <img src="../../static/images/add.png" alt="" class="addImage" @click="uploadImage(oindex)">
+                  <img src="static/images/add.png" alt="" class="addImage" @click="uploadImage(oindex)">
                   <span class="addImageTips">{{oindex!==0?'插入图片(推荐200X200像素)':'插入图片(推荐900X500像素)'}}</span>
                 </div>
               </div>
@@ -111,14 +111,15 @@
         <div class="btn delete" @click="deleteThisMessage" v-show="message.canEdit">删除</div>
         <div class="btn save" @click="saveThisMessage" v-show="message.canEdit">保存</div>
       </div>
+      <iconfirm
+        :show="show"
+        @onConfirm="onConfirm"
+        @onCancel="onCancel"
+      >
+        <p>确定删除消息{{msgIndex}}吗？</p>
+      </iconfirm>
+      <div class="mask" v-show="show" style="background-color: rgba(0,0,0,.5)"></div>
     </div>
-    <iconfirm
-      :show="show"
-      @onConfirm="onConfirm"
-      @onCancel="onCancel"
-    >
-      <p>确定删除消息{{msgIndex}}吗？</p>
-    </iconfirm>
   </div>
 </template>
 <script>
@@ -192,6 +193,14 @@
   }
 </script>
 <style lang="less" scoped>
+  .mask{
+    position: absolute;
+    left:0;
+    right:0;
+    top:0;
+    bottom:0;
+    z-index:99;
+  }
   .messageContainer{
     padding: 0 10px;
     li{
@@ -206,6 +215,8 @@
       margin:20px 0;
     }
     .messageItem{
+
+      position: relative;
       .itemHeader{
         .leftPart{
           padding:10px 0;
@@ -222,12 +233,6 @@
       }
     .itemBody{
       position:relative;
-      .mask{
-        position: absolute;
-        width:100%;
-        height:100%;
-        z-index: 80;
-      }
       .moreItemTitle{
         padding:10px 0 0 0;
         color:#d43f3a;

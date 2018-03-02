@@ -56,7 +56,8 @@ export const mutations = {
   },
   //渠道二维码增删改查
   [types.ADDCHANNEL](state,{id,channel_group_id,channel_group_name,name,code,sendSubscribeMessage,sendChannelMessage}){
-    console.log(id,channel_group_id,channel_group_name,name,code,sendSubscribeMessage,sendChannelMessage)
+    console.log(id,channel_group_id,channel_group_name)
+    console.log(name,code,sendSubscribeMessage,sendChannelMessage)
     let data = {
       channels:name,
       send_subscribe_message:sendSubscribeMessage,
@@ -73,7 +74,7 @@ export const mutations = {
       data.id = id
       isadd = false
     }
-    console.log(state,'-----------------')
+    console.log(data,'-----------------')
     axios.post('/ykb/mg/private/wechat/qrcode',data)
       .then((res)=>{
         if(res.data.code === 2000){
@@ -81,7 +82,7 @@ export const mutations = {
           let results = res.data.result
           if(isadd){
             state.qrcodeInfos.qrcodePageInfo.totalCount++
-            state.qrcodeInfos.qrcodeResults.push(results)
+            state.qrcodeInfos.qrcodeResults.unshift(results)
             Toast.success({
               msg:'渠道二维码信息已经添加了'
             })
@@ -135,14 +136,44 @@ export const mutations = {
     console.log(data)
     state.allChannelGroupList = data
   },
+  //渠道二维码，获取该渠道用户关注数
 
+  [types.SETQRCODECOUNT](state,count){
+      state.thisQrcodePersonalCount = count
+  },
   /*获取该渠道扫码后的微信发送的消息*/
   [types.GETTHISCHANNELWXMESSAGE](state,{type,scene}){
     axios.get('/ykb/mg/private/message/?type='+type+'&qrCodeScene='+scene)
       .then(res=>{
         if(res.data.code === 2000){
           console.log(res)
-          state.channelWxMessages = res.data.result
+          let result = res.data.result,obj = {
+            type:type,
+            typeName:'',
+            msg_type:'',
+            canEdit:true,
+            imgUrl:'',
+            article_list:[{
+              title:"",
+              description:"",
+              url:"",
+              pic_url:""
+            }],
+            radioData:[{
+              name:'开启',
+              value:true,
+              status:true
+            },{
+              name:'关闭',
+              value:false,
+              status:false
+            }]
+          }
+          for(let i=result.length-1;i>=0;i--){
+            result[i].canEdit = false
+            result[i] = Object.assign({},obj,result[i])
+          }
+          state.channelWxMessages = result
           console.log(state.channelWxMessages)
         }else{
           withNoAuthority(res.data.code+" "+res.data.desc,res.data.code)
@@ -261,7 +292,7 @@ export const mutations = {
 
   //获取用户信息
   [types.GETUSERS](state,{nowPage,pageSize}){
-    axios.get('/ykb/mg/private/wechat/qrcode/user?page.nowPage='+nowPage+'&page.pageSize='+pageSize)
+    axios.get('/ykb/mg/private/user/?nowPage='+nowPage+'&pageSize='+pageSize)
       .then((res)=>{
         if(res.data.code === 2000){
           console.log(res.data)
@@ -285,6 +316,20 @@ export const mutations = {
       withNoAuthority(error,state.hadLogin)
     })
   },
+  [types.SEARCHUSERLIST](state,results){
+      let result = results.result
+      state.usersInfos.usersResults = []
+      state.usersInfos.usersPageInfo = {
+        nowPage:results.nowPage,
+        pageSize:results.pageSize,
+        start:results.start,
+        totalCount:results.totalCount,
+        totalPage:results.totalPage
+      }
+      for(let i=0,len=result.length;i<len;i++){
+        state.usersInfos.usersResults.push(result[i])
+      }
+  },
 
   /*关注公众号后消息操作*/
   [types.SAVETHISMESSAGE](state,{obj}){
@@ -293,6 +338,19 @@ export const mutations = {
          .then(res=>{
            if(res.data.code === 2000){
              console.log(res)
+             let result = res.data.result,wxMessages =result.type==='CHANNEL'?state.channelWxMessages: state.wxMessages,isNew = true
+             for(let i=wxMessages.length-1;i>=0;i--){
+               if(wxMessages[i].id === result.id){
+                 wxMessages.splice(i,1,result)
+                 isNew = false
+                 break;
+               }
+             }
+             console.log(wxMessages,isNew,result)
+             if(isNew){
+               wxMessages.push(result)
+             }
+             console.log(wxMessages,isNew)
            }else{
              withNoAuthority(res.data.code+" "+res.data.desc,res.data.code)
            }
@@ -306,7 +364,34 @@ export const mutations = {
       .then(res=>{
         if(res.data.code === 2000){
           console.log(res)
-          state.wxMessages = res.data.result
+          let result = res.data.result,obj = {
+            type:type,
+            typeName:'',
+            msg_type:'',
+            canEdit:true,
+            imgUrl:'',
+            article_list:[{
+              title:"",
+              description:"",
+              url:"",
+              pic_url:""
+            }],
+            radioData:[{
+              name:'开启',
+              value:true,
+              status:true
+            },{
+              name:'关闭',
+              value:false,
+              status:false
+            }]
+          }
+          for(let i=result.length-1;i>=0;i--){
+            result[i].canEdit = false
+            result[i] = Object.assign({},obj,result[i])
+          }
+          state.wxMessages = result
+
           console.log(state.wxMessages)
         }else{
           withNoAuthority(res.data.code+" "+res.data.desc,res.data.code)
@@ -316,16 +401,18 @@ export const mutations = {
         withNoAuthority(error,state.hadLogin)
       })
   },
-  [types.DELETETHISMESSAGE](state,{id,messages}){
+  [types.DELETETHISMESSAGE](state,{id,channel}){
     axios.post('/ykb/mg/private/message/delete',{id:id})
       .then(res=>{
         if(res.data.code === 2000){
+          let messages = channel==='CHANNEL'?state.channelWxMessages:state.wxMessages
           for(let i=messages.length-1;i>=0;i--){
             if(messages[i].id === id){
               messages.splice(i,1)
               Toast.success({
                 msg:'删除消息成功！'
               })
+              console.log(messages,'delete')
               break;
             }
           }
@@ -337,10 +424,9 @@ export const mutations = {
         withNoAuthority(error,state.hadLogin)
       })
   },
-
   /*查询测试关注公众号后发送消息的人的openid*/
   [types.CHECKOUTUSER](state,open_id){
-    axios.get('/ykb/mg/private/user/?openId='+open_id)
+    axios.get('/ykb/mg/private/user/query?openId='+open_id)
          .then(res=>{
            console.log(res)
            if(res.data.code === 2000){
@@ -420,6 +506,12 @@ export const mutations = {
   [types.GETTHISCHANNELGROUPLIST](state,data){
     console.log(data,'GETTHISCHANNELGROUPLIST')
     state.thisChannelGroupList = data
+  },
+
+  //用户列表，获取所有的渠道
+  [types.ALLCHANNELLIST](state,data){
+    console.log(data)
+    state.allChannelList = data
   },
 
   /*上传图片*/

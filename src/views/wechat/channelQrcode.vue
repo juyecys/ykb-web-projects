@@ -73,12 +73,12 @@
       <div class="ModalForShowTdValue">
         <div class="tdValue" v-if="showTdIndex === 2">
           <img :src="tdObject.qrcodeUrl" alt="">
-          <div class="tips">请右键，图片另存为或者复制图片{{tdObject.qrcodeUrl}}</div>
+          <div class="tips">请右键，图片另存为或者复制图片</div>
           <input type="text" :value="tdObject.qrcodeUrl" id="qrcodeUrl">
         </div>
         <div class="tdValue" v-if="showTdIndex === 3">
           <p><span>关注渠道：</span>{{tdObject.qrcodeName}}</p>
-          <p><span>关注用户数：</span>{{tdObject.qrcodeCount}}人</p>
+          <p><span>关注用户数：</span>{{thisQrcodePersonalCount}}人</p>
         </div>
       </div>
     </modal>
@@ -151,6 +151,9 @@
       }
     },
     computed:{
+      thisQrcodePersonalCount(){
+        return this.$store.state.thisQrcodePersonalCount
+      },
       qrcodeResults(){
         return this.$store.state.qrcodeInfos.qrcodeResults
       },
@@ -175,16 +178,16 @@
             radioData:[{
               name:'开启',
               value:true,
-              status:false
+              status:true
             },{
               name:'关闭',
               value:false,
-              status:true
+              status:false
             }]
           })
         }else{
           for(let i=wxMessages.length-1;i>=0;i--){
-            wxMessages[i].canEdit = false
+            //wxMessages[i].canEdit = false
             if(wxMessages[i].status){
               wxMessages[i].radioData = [{
                 name:'开启',
@@ -276,8 +279,7 @@
         showTdIndex:0,//查看二维码信息以及关注人数的模态窗的确定键的事件
         tdObject:{//查看二维码信息以及关注人数的模态窗的内容对象
           qrcodeUrl:'',
-          qrcodeName:'',
-          qrcodeCount:0
+          qrcodeName:''
         },
         inquiryChannelName:'',//查询渠道信息的渠道名
         inquiryChannelCode:'',//查询渠道信息的渠道编码
@@ -354,11 +356,11 @@
             radioData:[{
               name:'开启',
               value:true,
-              status:false
+              status:true
             },{
               name:'关闭',
               value:false,
-              status:true
+              status:false
             }]
           })
         }else{
@@ -393,7 +395,7 @@
       deleteThisMessage(item,index){
         //this.messages.splice(index,1)
         if(item.hasOwnProperty('id')){
-          this.$store.dispatch('deleteThisMessage',{id:item.id,messages:this.messages})
+          this.$store.dispatch('deleteThisMessage',{id:item.id,channel:'CHANNEL'})
         }else{
           this.messages.splice(index,1)
         }
@@ -414,6 +416,7 @@
               msg_type:'text',
               content:item.content
             }
+            console.log(item,'--------------id')
             item.hasOwnProperty('id') && (obj.id = item.id)
             break;
           case 'image':
@@ -428,12 +431,6 @@
             if(item.article_list[0].title === ''){
               Toast.error({
                 msg:'请填写图文消息标题'
-              })
-              return
-            }
-            if(item.article_list[0].description === ''){
-              Toast.error({
-                msg:'请填写图文消息摘要'
               })
               return
             }
@@ -497,35 +494,40 @@
           }
         }
         obj.qr_code_scene = this.inquiryChannelCode,
-        this.messages.splice(index,1,item)
-        console.log(this.messages[index],obj)
+        //this.messages.splice(index,1,item)
+        console.log(this.messages,obj)
         this.$store.dispatch('saveThisMessage',{obj})
-        let mes = this.messages.slice(0)
+        /*let mes = this.messages.slice(0)
         this.messages=[]
         this.$nextTick(()=>{
           this.messages = mes.slice(0)
-        })
+        })*/
       },
       //取消编辑这条消息
       cancelEditThisMessage(item,index){
-        item.canEdit = false;
-        this.messages.splice(index,1,item)
-        let mes = this.messages.slice(0)
+        if(item.hasOwnProperty('id')){
+          item.canEdit = false;
+          this.messages.splice(index,1,item)
+        }else{
+          this.messages.splice(index,1)
+        }
+
+        /*let mes = this.messages.slice(0)
         this.messages=[]
         this.$nextTick(()=>{
           this.messages = mes.slice(0)
-        })
+        })*/
       },
       //编辑这条消息
       editThisMessage(item,index){
         item.canEdit = true;
         this.messages.splice(index,1,item)
-        let mes = this.messages.slice(0)
+        /*let mes = this.messages.slice(0)
         this.messages=[];//为了触发视图更新
         this.$nextTick(()=>{
           this.messages = mes.slice(0)
           console.log(this.messages)
-        })
+        })*/
         console.log(this.messages)
       },
       //切换查询二维码的tab页
@@ -546,9 +548,8 @@
           this.inquiryChannelId = qrcodeResult.id
           this.channelGroupId = qrcodeResult.hasOwnProperty('channel_group_id')?qrcodeResult.channel_group_id:''
           this.channelGroupName = qrcodeResult.hasOwnProperty('channel_group_name')?qrcodeResult.channel_group_name:''
-          console.log(qrcodeResult)
-          this.sengMsgFrom[0].status = qrcodeResult.send_subscribe_message
-          this.sengMsgFrom[1].status = qrcodeResult.send_channel_message
+          this.sengMsgFrom[0].status = qrcodeResult.hasOwnProperty('send_subscribe_message')?qrcodeResult.send_subscribe_message:true
+          this.sengMsgFrom[1].status = qrcodeResult.hasOwnProperty('send_channel_message')?qrcodeResult.send_channel_message:false
           console.log(this.inquiryChannelId,'this.inquiryChannelId')
           //this.messages = []
           this.$store.dispatch('getThisChannelWxMessage',{type:'CHANNEL',scene:qrcodeResult.scene})
@@ -574,7 +575,6 @@
           console.log(this.qrcodeResults[index],index,this.qrcodeResults[index].qr_code_url)
           this.$set(this.tdObject,'qrcodeUrl',this.qrcodeResults[index].qr_code_url)
           this.$set(this.tdObject,'qrcodeName',this.qrcodeResults[index].channels)
-          this.$set(this.tdObject,'qrcodeCount',this.qrcodeResults[index].scanTime)
           this.tdTitle = '查看渠道二维码'
           this.ModalForShowTdValue = true
           maskLayer.show()
@@ -582,7 +582,7 @@
           this.showTdIndex = 3
           this.$set(this.tdObject,'qrcodeUrl','')
           this.$set(this.tdObject,'qrcodeName',this.qrcodeResults[index].channels)
-          this.$set(this.tdObject,'qrcodeCount',this.qrcodeResults[index].scanTime)
+          this.$store.dispatch('getQrcodeCount',this.qrcodeResults[index].scene)
           this.tdTitle = '查看关注用户数'
           this.ModalForShowTdValue = true
           maskLayer.show()

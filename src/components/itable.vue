@@ -12,7 +12,7 @@
         </thead>
         <tbody>
         <tr v-for="(item,index) in tableData" :class="trClass[index]" @click="trClick(index)">
-          <td v-for="(td,_index) in tds" :class="tdClass[_index]" @click="tdClick(index,_index)" :style="{'color':td.indexOf('#')>-1?'#06e':''}">
+          <td v-for="(td,_index) in tds" :class="tdClass[_index]" @click="tdClick(index,_index,td)" :style="{'color':td.indexOf('#')>-1?'#06e':''}">
             <span v-if="isPrueTdKey(td)==='key'">{{item[td]}}</span>
             <span v-else-if="isPrueTdKey(td)==='text'">{{replaceTdTxtValue(td)}}</span>
             <img v-for="(item,__index) in replaceTdImgValue(td)" :src="item" alt="" v-else="isPrueTdKey(td) === 'img'" @click="tdImgClick(index,__index)">
@@ -139,8 +139,8 @@
       trClick(_index){
         this.$emit('trClick',_index)
       },
-      tdClick(index,_index){
-        this.$emit('tdClick',index,_index)
+      tdClick(index,_index,key){
+        this.$emit('tdClick',index,_index,key)
       },
       selectPage(item){
         if(this.nowPage === item ) {
@@ -174,7 +174,7 @@
       height:40px;
       display: flex;
       justify-content:space-between;
-      margin-top:50px;
+      margin-top:10px;
       .action{
         background: #007AFF;
         color:#fff;

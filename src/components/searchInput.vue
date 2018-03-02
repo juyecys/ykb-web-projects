@@ -1,7 +1,7 @@
 <template>
   <div class="searchInput">
     <input type="text" :placeholder="placeholder" v-model="value" @keyup="toSearchData"  @focus="showSearchBlock" @blur="hideSearchBlock" :readonly="onlySelect" :style="{'cursor':onlySelect?'pointer':'','background':canEdit?'':'#eee'}">
-    <div class="showSearchData" v-show="inputing && canEdit">
+    <div class="showSearchData" v-show="inputing && canEdit" :id="'id'+inputId">
       <ul>
         <li v-for="(item,index) in datas" @click="choiceThisItem(item,index)">{{item}}</li>
       </ul>
@@ -13,7 +13,8 @@
     name:'searchInput',
     data(){
       return {
-        inputing:false
+        inputing:false,
+        inputId:new Date().getTime()
       }
     },
     props:{
@@ -59,8 +60,8 @@
       choiceThisItem(item,index){
         this.value = item
         this.$emit('update:searchkey',this.searchKeyValue[index])
-        this.$emit('update:value',this.value)
-        this.$emit('valueChange',this.value)
+        this.$emit('update:value',item)
+        this.$emit('valueChange',item)
         this.inputing = false
       },
       hideSearchBlock(){
@@ -78,6 +79,9 @@
       },
       showSearchBlock(){
         if(this.canEdit){
+          if(this.searchData.length >10){
+            document.querySelector('#id'+this.inputId).style.overflowY = 'scroll'
+          }
             setTimeout(()=>{
               this.inputing = true
           },300)
@@ -118,6 +122,8 @@
     .showSearchData{
       width:100%;
       max-width:500px;
+      max-height:300px;
+      overflow-y: hidden;
       background-color: #fff;
       border:1px solid #ccc;
       border-top:none;

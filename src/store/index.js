@@ -39,7 +39,9 @@ const state = {
     pageInfo:[]
   },
   thisChannelGroupList:[],
-  allChannelGroupList:[]
+  allChannelGroupList:[],
+  allChannelList:[],
+  thisQrcodePersonalCount:0
 }
 
 export default new Vuex.Store({
