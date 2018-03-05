@@ -126,20 +126,20 @@
         }
       },
       channelGroupList(){
-        return this.$store.state.allChannelGroupList.map((item)=>{
+        return this.$store.state.users.allChannelGroupList.map((item)=>{
           return item.name
         })
       },
       channelList(){
-        return this.$store.state.allChannelList.map((item)=>{
+        return this.$store.state.users.allChannelList.map((item)=>{
           return item.channels
         })
       },
       usersResults(){
-        return this.$store.state.usersInfos.usersResults
+        return this.$store.state.users.usersList
       },
       usersPageInfo(){
-        return this.$store.state.usersInfos.usersPageInfo
+        return this.$store.state.users.usersPageInfo
       },
       searchDate(){
         if(this.dateObj === null) {

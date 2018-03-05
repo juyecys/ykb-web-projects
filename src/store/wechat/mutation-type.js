@@ -1,8 +1,7 @@
-export const DIRECTION = 'DIRECTION';
-export const PATHNAME = 'PATHNAME';
-export const MINIMENU = 'MINIMENU';
-export const TOLOGIN = 'TOLOGIN';
-export const TEST = 'TEST';
+/**
+ * Created by FuxiaoKe on 2018/3/5.
+ */
+
 export const ADDCHANNEL = 'ADDCHANNEL';
 export const GETCHANNELs = 'GETCHANNELs';
 export const GETWXMENU = 'GETWXMENU';
@@ -24,14 +23,4 @@ export const EDITCHANNELGROUP = 'EDITCHANNELGROUP';
 export const GETTHISCHANNELGROUPLIST = 'GETTHISCHANNELGROUPLIST';
 export const ALLCHANNELGROUPLIST = 'ALLCHANNELGROUPLIST';
 export const ALLCHANNELLIST = 'ALLCHANNELLIST';
-export const SEARCHUSERLIST = 'SEARCHUSERLIST';
 export const SETQRCODECOUNT = 'SETQRCODECOUNT';
-
-export const ERRORSTATUS = 'ERRORSTATUS';
-export const ERRORCODE = 'ERRORCODE';
-
-export const BTNCLICKING = 'BTNCLICKING';
-export const BTNCLICKOVER = 'BTNCLICKOVER';
-
-
-

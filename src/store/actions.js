@@ -14,6 +14,7 @@ export const toLogin = ({commit},{user,passwd,cb}) =>{
   commit(types.TOLOGIN,{user,passwd,cb})
 }
 
+/*
 //渠道二维码增删改查
 export const addChannel = ({commit},{id,channel_group_id,channel_group_name,name,code,sendSubscribeMessage,sendChannelMessage}) =>{
   console.log(id,channel_group_id,channel_group_name,name,code,sendSubscribeMessage,sendChannelMessage)
@@ -81,7 +82,7 @@ export const makeMenu = ({commit}) =>{
   commit(types.MAKEMENU)
 }
 
-/*关注公众号后消息操作*/
+/!*关注公众号后消息操作*!/
 export const saveThisMessage = ({commit},{obj}) =>{
   console.log(obj,'saveThisMessage')
   commit(types.SAVETHISMESSAGE,{obj})
@@ -175,12 +176,12 @@ export const inquiryChannelGroupInfo = ({commit},name) =>{
 }
 
 
-/*查询测试关注公众号后发送消息的人的openid*/
+/!*查询测试关注公众号后发送消息的人的openid*!/
 export const checkoutUser = ({commit},open_id) =>{
   commit(types.CHECKOUTUSER,open_id)
 }
 
-/*发送关注公众号后的消息给测试人员*/
+/!*发送关注公众号后的消息给测试人员*!/
 export const toSendMessageToSomeone = ({commit},{open_id,type,qr_code_scene}) =>{
   commit(types.TOSENDMESSAGETOSOMEONE,{open_id,type,qr_code_scene})
 }
@@ -226,7 +227,14 @@ export const searchUser = ({commit},data) =>{
       commit(types.ERRORSTATUS,error)
     })
 }
+*/
+export const btnClicking = ({commit})=>{
+  commit(type.BTNCLICKING)
+}
 
+export const btnClickOver = ({commit})=>{
+  commit(type.BTNCLICKOVER  )
+}
 
 
 

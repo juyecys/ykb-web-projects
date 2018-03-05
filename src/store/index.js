@@ -7,6 +7,10 @@ import {
 }
 from './mutations'
 
+import wechatModule from './wechat/index';
+import systemModule from './system/index';
+import usersModule from './users/index';
+
 Vue.use(Vuex)
 
 console.log(mutations)
@@ -41,12 +45,20 @@ const state = {
   thisChannelGroupList:[],
   allChannelGroupList:[],
   allChannelList:[],
-  thisQrcodePersonalCount:0
+  thisQrcodePersonalCount:0,
+
+  clickOver:true
+
 }
 
 export default new Vuex.Store({
   actions,
   getters,
   state,
-  mutations
+  mutations,
+  modules: {
+    wechat:wechatModule,
+    system:systemModule,
+    users:usersModule
+  }
 })

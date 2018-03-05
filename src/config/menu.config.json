@@ -1,4 +1,17 @@
 [{
+  "menuName":"权限管理",
+  "menuCode":"system",
+  "menuResource":"",
+  "sequence":0,
+  "isParentMenu":true
+},{
+  "menuName":"系统用户",
+  "menuCode":"users",
+  "menuResource":"users",
+  "sequence":0,
+  "isParentMenu":false,
+  "parentMenuCode":"system"
+},{
   "menuName":"微信模块",
   "menuCode":"wechat",
   "menuResource":"",

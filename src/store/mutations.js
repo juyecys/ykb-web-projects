@@ -13,6 +13,12 @@ let withNoAuthority = (error,errorCode)=>{
   console.log(router.history.current.name)
 }
 export const mutations = {
+  [types.BTNCLICKING](state){
+    state.clickOver = false
+  },
+  [types.BTNCLICKOVER](state){
+    state.clickOver = true
+  },
   [types.ERRORCODE](state,{error,code}){
     Toast.error({msg:error})
     if(code === "4001"){
@@ -54,7 +60,7 @@ export const mutations = {
           withNoAuthority(error,state.hadLogin)
         })
   },
-  //渠道二维码增删改查
+  /*//渠道二维码增删改查
   [types.ADDCHANNEL](state,{id,channel_group_id,channel_group_name,name,code,sendSubscribeMessage,sendChannelMessage}){
     console.log(id,channel_group_id,channel_group_name)
     console.log(name,code,sendSubscribeMessage,sendChannelMessage)
@@ -141,7 +147,7 @@ export const mutations = {
   [types.SETQRCODECOUNT](state,count){
       state.thisQrcodePersonalCount = count
   },
-  /*获取该渠道扫码后的微信发送的消息*/
+  /!*获取该渠道扫码后的微信发送的消息*!/
   [types.GETTHISCHANNELWXMESSAGE](state,{type,scene}){
     axios.get('/ykb/mg/private/message/?type='+type+'&qrCodeScene='+scene)
       .then(res=>{
@@ -292,7 +298,7 @@ export const mutations = {
 
   //获取用户信息
   [types.GETUSERS](state,{nowPage,pageSize}){
-    axios.get('/ykb/mg/private/user/?nowPage='+nowPage+'&pageSize='+pageSize)
+    axios.get('/ykb/mg/private/wechatuser/?nowPage='+nowPage+'&pageSize='+pageSize)
       .then((res)=>{
         if(res.data.code === 2000){
           console.log(res.data)
@@ -331,7 +337,7 @@ export const mutations = {
       }
   },
 
-  /*关注公众号后消息操作*/
+  /!*关注公众号后消息操作*!/
   [types.SAVETHISMESSAGE](state,{obj}){
     console.log(obj,'-----------------')
     axios.post('/ykb/mg/private/message/',obj)
@@ -424,9 +430,9 @@ export const mutations = {
         withNoAuthority(error,state.hadLogin)
       })
   },
-  /*查询测试关注公众号后发送消息的人的openid*/
+  /!*查询测试关注公众号后发送消息的人的openid*!/
   [types.CHECKOUTUSER](state,open_id){
-    axios.get('/ykb/mg/private/user/query?openId='+open_id)
+    axios.get('/ykb/mg/private/wechatuser/query?openId='+open_id)
          .then(res=>{
            console.log(res)
            if(res.data.code === 2000){
@@ -440,7 +446,7 @@ export const mutations = {
            }
          })
   },
-/*发送关注公众号后的消息给测试人员*/
+/!*发送关注公众号后的消息给测试人员*!/
   [types.TOSENDMESSAGETOSOMEONE](state,{open_id,type,qr_code_scene}){
     let data = {
       open_id:open_id,
@@ -512,7 +518,7 @@ export const mutations = {
   [types.ALLCHANNELLIST](state,data){
     console.log(data)
     state.allChannelList = data
-  },
+  },*/
 
   /*上传图片*/
   [types.UPLOADIMAGE](state,{data}){

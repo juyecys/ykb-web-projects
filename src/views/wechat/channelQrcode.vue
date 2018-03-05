@@ -17,7 +17,6 @@
             <search-input :value.sync="channelGroupName" :searchkey.sync="channelGroupId" :searchData="allChannelGroupList.channelGroupName" :searchKeyValue="allChannelGroupList.channelGroupId" @valueChange="searchInputValueChange" :onlySelect="true"></search-input>
           </div>
         </div>
-
       </div>
     </modal>
     <modal :show="showInquiryModal" @makesure="addChannel(1)" @cancel="cancel" confirmTxt="确定" title="查询渠道二维码" id="showInquiryModal" :width="1000">
@@ -152,16 +151,16 @@
     },
     computed:{
       thisQrcodePersonalCount(){
-        return this.$store.state.thisQrcodePersonalCount
+        return this.$store.state.wechat.thisQrcodePersonalCount
       },
       qrcodeResults(){
-        return this.$store.state.qrcodeInfos.qrcodeResults
+        return this.$store.state.wechat.qrcodeResults
       },
       qrcodePageInfo(){
-        return this.$store.state.qrcodeInfos.qrcodePageInfo
+        return this.$store.state.wechat.qrcodePageInfo
       },
       channelWxMessages(){
-        let wxMessages = this.$store.state.channelWxMessages
+        let wxMessages = this.$store.state.wechat.channelWxMessages
         if(wxMessages.length === 0){
           wxMessages.push({
             type:'CHANNEL',
@@ -233,13 +232,13 @@
         return wxMessages
       },
       testMessagesPeople(){
-        return this.$store.state.testMessagesPeople
+        return this.$store.state.wechat.testMessagesPeople
       },
       uploadImageUrl(){
-        return this.$store.state.uploadImageUrl
+        return this.$store.state.wechat.uploadImageUrl
       },
       allChannelGroupList(){
-        let channelGroupId = [],channelGroupName=[],allChannelGroupList = this.$store.state.allChannelGroupList
+        let channelGroupId = [],channelGroupName=[],allChannelGroupList = this.$store.state.users.allChannelGroupList
         for(let i=0,len=allChannelGroupList.length;i<len;i++){
           channelGroupId.push(allChannelGroupList[i].id)
           channelGroupName.push(allChannelGroupList[i].name)
@@ -511,23 +510,11 @@
         }else{
           this.messages.splice(index,1)
         }
-
-        /*let mes = this.messages.slice(0)
-        this.messages=[]
-        this.$nextTick(()=>{
-          this.messages = mes.slice(0)
-        })*/
       },
       //编辑这条消息
       editThisMessage(item,index){
         item.canEdit = true;
         this.messages.splice(index,1,item)
-        /*let mes = this.messages.slice(0)
-        this.messages=[];//为了触发视图更新
-        this.$nextTick(()=>{
-          this.messages = mes.slice(0)
-          console.log(this.messages)
-        })*/
         console.log(this.messages)
       },
       //切换查询二维码的tab页

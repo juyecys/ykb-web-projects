@@ -63,7 +63,7 @@
     },
     computed:{
       wxMessages(){
-        let wxMessages = this.$store.state.wxMessages
+        let wxMessages = this.$store.state.wechat.wxMessages
         //console.log(wxMessages,'----')
         for(let i=wxMessages.length-1;i>=0;i--){
           //!wxMessages[i].hasOwnProperty('canEdit')&&(wxMessages[i].canEdit = false)
@@ -110,10 +110,10 @@
         return wxMessages
       },
       testMessagesPeople(){
-        return this.$store.state.testMessagesPeople
+        return this.$store.state.wechat.testMessagesPeople
       },
       uploadImageUrl(){
-        return this.$store.state.uploadImageUrl
+        return this.$store.state.wechat.uploadImageUrl
       }
     },
     mounted(){

@@ -72,7 +72,7 @@
     },
     computed:{
       channelGroupResult(){
-        let data = this.$store.state.channelGroupList.result
+        let data = this.$store.state.wechat.channelGroupList.result
         console.log(data)
         if(data !== undefined){
           for(let i=0,len=data.length;i<len;i++){
@@ -88,10 +88,10 @@
         }
       },
       channelGroupPageInfo(){
-        return this.$store.state.channelGroupList.pageInfo
+        return this.$store.state.wechat.channelGroupList.pageInfo
       },
       thisChannelGroupList(){
-        return this.$store.state.thisChannelGroupList
+        return this.$store.state.wechat.thisChannelGroupList
       }
     },
     data(){
