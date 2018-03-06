@@ -171,6 +171,7 @@
     }
     .pagination{
       width:100%;
+      min-width:800px;
       height:40px;
       display: flex;
       justify-content:space-between;

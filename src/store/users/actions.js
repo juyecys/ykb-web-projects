@@ -38,7 +38,7 @@ export const getAllChannel = ({commit}) =>{
 
 //用户列表，搜索用户
 export const searchUser = ({commit},data) =>{
-  axios.get('/ykb/mg/private/user/',{
+  axios.get('/ykb/mg/private/wechatuser/',{
     params:data
   })
     .then(res=>{

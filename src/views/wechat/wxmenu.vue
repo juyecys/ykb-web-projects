@@ -130,7 +130,7 @@
     },
     mounted(){
       console.log('mounted')
-      if(this.$store.state.wechat.wxMenuInfos.wxMenuPageInfo.nowPage !== 1){
+      if(this.$store.state.wechat.wxMenuPageInfo.nowPage !== 1){
           this.$store.dispatch('getWXMenu',{pageSize:10,nowPage:1})
       }
       console.log()
@@ -140,7 +140,7 @@
         return this.menuItem.levelName
       },
       wxMenuResults(){
-        let wxMenuResults = this.$store.state.wechat.wxMenuInfos.wxMenuResults,index=0
+        let wxMenuResults = this.$store.state.wechat.wxMenuResults,index=0
         for(let i=wxMenuResults.length-1;i>=0;i-- ){
           wxMenuResults[i].typeName = this.menuType[wxMenuResults[i].type]
           wxMenuResults[i].levelName = wxMenuResults[i].level===1?'一级':'二级'
@@ -155,7 +155,7 @@
         return wxMenuResults
       },
       wxMenuPageInfo(){
-        return this.$store.state.wechat.wxMenuInfos.wxMenuPageInfo
+        return this.$store.state.wechat.wxMenuPageInfo
       },
       clickOver(){
         return this.$store.state.clickOver

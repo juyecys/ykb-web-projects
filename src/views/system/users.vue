@@ -2,8 +2,8 @@
   <div id="users">
     <operation-btn :btns="btns"></operation-btn>
     <itable
-      :ths="['openid','省份','城市','微信名称','关注时间','关注渠道','渠道分组']"
-      :tds="['open_id','province','city','nick_name','subscribe_time','channels','channel_group_name']"
+      :ths="['用户名','所属角色','是否有效','过期时间','描述']"
+      :tds="['name','role_name','enabled','exprie_date','#暂无#']"
       :tableData="usersResults"
       :totalPage="usersPageInfo.totalPage"
       :totalCount="usersPageInfo.totalCount"
