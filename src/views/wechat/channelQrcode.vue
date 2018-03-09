@@ -1,6 +1,7 @@
 <template>
   <div id="channelQrcode">
     <operation-btn :btns="btns"></operation-btn>
+    <!--新增渠道二维码-->
     <modal :show="showModal" @makesure="addChannel(0)" @cancel="hideAddChannelModal" confirmTxt="确定" title="新增渠道二维码" id="showModal">
       <div class="channelInput">
         <div class="channelItem">
@@ -19,6 +20,7 @@
         </div>
       </div>
     </modal>
+    <!--查询/编辑某个渠道信息-->
     <modal :show="showInquiryModal" @makesure="addChannel(1)" @cancel="cancel" confirmTxt="确定" title="查询渠道二维码" id="showInquiryModal" :width="1000">
       <div class="muchContainer">
         <div class="sectionHeader">
@@ -81,6 +83,25 @@
         </div>
       </div>
     </modal>
+    <!--查询符合某个条件的渠道二维码信息-->
+    <modal :show="inquirySomeone" :footerBtn="footerBtn" @makesure="toInquirySomeone" @cancel="hideInquirySomeoneModal" title="模糊查询某个渠道" id="inquirySomeone">
+        <div class="channelInput">
+          <div class="channelItem">
+            <span>渠道分组</span>
+            <div class="searchContainer">
+              <search-input :value.sync="inQuiryChannelGroupName" :searchkey.sync="inQuiryChannelGroupId" :searchData="allChannelGroupList.channelGroupName" :searchKeyValue="allChannelGroupList.channelGroupId" @valueChange="searchInputValueChange" :onlySelect="true"></search-input>
+            </div>
+          </div>
+          <div class="channelItem">
+            <span>渠道名</span>
+            <input type="text" v-model="inquirySomeoneName" placeholder="请输入渠道名">
+          </div>
+          <div class="channelItem">
+            <span>渠道编码</span>
+            <input type="text" v-model="inquirySomeoneCode" placeholder="渠道编码只能是数字/大小写字母/_/-">
+          </div>
+        </div>
+    </modal>
     <!--二维码信息-->
     <itable
       :ths="['渠道编码','渠道名','渠道二维码','关注用户数','渠道分组','最后修改人','最后修改时间','操作']"
@@ -130,7 +151,7 @@
       operationBtn,modal,itable,messageForWx,choice,searchInput
     },
     mounted(){
-      if(this.$store.state.qrcodeInfos.qrcodePageInfo.nowPage !== 1){
+      if(!this.$store.state.wechat.qrcodePageInfo.hasOwnProperty('nowPage')){
         this.$store.dispatch('getChannels',{nowPage:1,pageSize:10})
         this.$store.dispatch('getAllChannelGroup')
       }
@@ -210,7 +231,7 @@
             }
 
             if(wxMessages[i].msg_type === 'text'){
-              wxMessages[i].typeName = '文字消息'
+              wxMessages[i].typeName = '文本消息'
               continue;
             }
             if(wxMessages[i].msg_type === 'image'){
@@ -248,6 +269,17 @@
     },
     data(){
       return {
+        footerBtn:[{
+          name:'清除条件',
+          event:this.cleanInquiryValue
+        }],
+        inquirySomeoneInfo:{},
+        isInquirySomeone:false,
+        inquirySomeoneName:'',//模糊查询条件中的渠道名
+        inquirySomeoneCode:'',//模糊查询条件中的渠道编码
+        inQuiryChannelGroupName:'',//模糊查询条件中的渠道分组名
+        inQuiryChannelGroupId:'',//模糊查询条件中的渠道分组ID
+        inquirySomeone:false,//打开模糊搜索窗口
         channelGroupId:'',
         channelGroupName:'',
         updateChannel:false,//是否是更新渠道信息，是就禁止更改渠道编码的输入
@@ -290,10 +322,64 @@
         btns:[{
           name:'新增',
           event:this.addEvent
+        },{
+          name:'查询',
+          event:this.inQueryChannel,
+          style:'successBtn'
+        },{
+          name:'查询全部',
+          event:this.inQueryAllChannel
         }]
       }
     },
     methods:{
+      cleanInquiryValue(){
+        this.inquirySomeoneName = ''
+        this.inquirySomeoneCode = ''
+        this.inQuiryChannelGroupName = ''
+        this.inQuiryChannelGroupId = ''
+      },
+      //获取所有的渠道信息
+      inQueryAllChannel(){
+        this.$store.dispatch('getChannels',{nowPage:1,pageSize:10})
+        this.isInquirySomeone = false
+      },
+      //模糊查询某个渠道
+      toInquirySomeone(){
+        let data = {},canSubmit = false
+        if(this.inQuiryChannelGroupId!==''){
+          canSubmit = true
+          data.channelGroupId = this.inQuiryChannelGroupId
+        }
+        if(this.inquirySomeoneName !== ''){
+          canSubmit = true
+          data.channels = this.inquirySomeoneName
+        }
+        if(this.inquirySomeoneCode !== ''){
+          canSubmit = true
+          data.channelScene = this.inquirySomeoneCode
+        }
+        data['page.nowPage'] = 1
+        data['page.pageSize'] = 10
+        this.inquirySomeoneInfo = Object.assign({},this.inquirySomeoneInfo,data)
+        console.log(this.inquirySomeoneInfo)
+        if(canSubmit){
+          this.$store.dispatch('inquirySomeone',data)
+        }else{
+          Toast.error({
+            msg:'请输入至少一个搜索条件'
+          })
+          return
+        }
+        maskLayer.hide()
+        this.inquirySomeone = false
+        this.isInquirySomeone = true
+      },
+      //查询某个渠道
+      inQueryChannel(){
+        this.inquirySomeone = true
+        maskLayer.show()
+      },
       searchInputValueChange(){
         console.log(this.channelGroupId,this.channelGroupName)
       },
@@ -406,7 +492,7 @@
           case 'text':
             if(item.content === ''){
               Toast.error({
-                msg:'请填写文字消息的内容'
+                msg:'请填写文本消息的内容'
               })
               return
             }
@@ -578,12 +664,22 @@
       //改变页大小
       changePageSize(size){
         console.log(size)
-        this.$store.dispatch('getChannels',{pageSize:size,nowPage:1})
+        if(!this.isInquirySomeone){
+          this.$store.dispatch('getChannels',{pageSize:size,nowPage:1})
+        }else{
+          this.inquirySomeoneInfo['page.pageSize'] = size
+          this.$store.dispatch('inquirySomeone',this.inquirySomeoneInfo)
+        }
       },
       //跳转下一页
       toNextPage(nextPage){
         console.log(nextPage)
-        this.$store.dispatch('getChannels',{pageSize:this.qrcodePageInfo.pageSize,nowPage:nextPage})
+        if(!this.isInquirySomeone){
+          this.$store.dispatch('getChannels',{pageSize:this.qrcodePageInfo.pageSize,nowPage:nextPage})
+        }else{
+          this.inquirySomeoneInfo['page.nowPage'] = nextPage
+          this.$store.dispatch('inquirySomeone',this.inquirySomeoneInfo)
+        }
       },
       //显示新增的模态窗
       addEvent(){
@@ -646,6 +742,10 @@
       //关闭新增渠道信息的模态窗
       hideAddChannelModal(){
         this.showModal = false
+        maskLayer.hide()
+      },
+      hideInquirySomeoneModal(){
+        this.inquirySomeone = false
         maskLayer.hide()
       },
       //关闭发送消息给测试人员的模态窗

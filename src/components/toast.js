@@ -52,7 +52,7 @@ const Toast = {
                 toastArr.splice(_index,1)
               }
             }
-          },600)
+          },100)
           clearInterval(stop)
         }
       },1000)

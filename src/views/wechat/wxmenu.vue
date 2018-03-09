@@ -107,7 +107,8 @@
           "content":"",
           "url":"",
           "imgUrl":"",
-          "parentName":''
+          "parentName":'',
+          "parentId":''
         },
         parentMenu:[],
         parentMenuId:[],
@@ -131,7 +132,7 @@
     mounted(){
       console.log('mounted')
       if(this.$store.state.wechat.wxMenuPageInfo.nowPage !== 1){
-          this.$store.dispatch('getWXMenu',{pageSize:10,nowPage:1})
+          this.$store.dispatch('getWXMenu',{pageSize:25,nowPage:1})
       }
       console.log()
     },
@@ -186,6 +187,7 @@
             "content":"",
             "url":"",
             "imgUrl":"",
+            "parentId":'',
             "parentName":''
           }
           this.menuItem = Object.assign({},this.menuItem,this.wxMenuResults[tr])
@@ -195,7 +197,7 @@
           maskLayer.show()
           this.showModal = true
         }else{
-          this.$store.dispatch('deleteWxMenu',{id:this.wxMenuResults[tr].id})
+          this.$store.dispatch('deleteWxMenu',this.wxMenuResults[tr].id)
         }
       },
       showUrlValue(tr,td,key){
@@ -255,6 +257,7 @@
           "content":"",
           "url":"",
           "imgUrl":"",
+          "parentId":'',
           "parentName":''
         }
       },
@@ -301,13 +304,14 @@
               break;
           }
         }
-        console.log(this.isAddMenu,menuItem.id)
+        console.log(this.isAddMenu,menuItem.id,menuItem.parentId)
         let datas = {
           "name":menuItem.name,
           "level":Number(menuItem.level),
           "type":menuItem.type,
           "sequence":menuItem.sequence,
-          "parentId":id
+          "parentId":menuItem.parentId === ''?id:menuItem.parentId,
+          "parentName":menuItem.parentName
         }
         switch(menuItem.type){
           case 'group':
@@ -384,6 +388,7 @@
             "content":"",
             "url":"",
             "imgUrl":"",
+            "parentId":'',
             "parentName":''
         }
       },

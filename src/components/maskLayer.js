@@ -3,7 +3,7 @@
  */
 const maskLayer = {
   init(){
-    console.log(document.querySelector('#maskLayer'))
+    //console.log(document.querySelector('#maskLayer'))
     if(document.querySelector('#maskLayer') === null){
       let maskLayer = document.createElement('div');
       maskLayer.id = 'maskLayer';

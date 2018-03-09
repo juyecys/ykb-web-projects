@@ -15,7 +15,6 @@ const state = {
   },
   thisChannelGroupList:[],
   allChannelGroupList:[],
-  thisQrcodePersonalCount:0,
-  clickOver:true
+  thisQrcodePersonalCount:0
 }
 export default state;

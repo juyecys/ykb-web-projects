@@ -7,6 +7,7 @@
     <div class="modalFooter">
       <div class="makesure" @click="makesure">{{confirmTxt}}</div>
       <div class="makecancel" @click="cancel" v-show="cancelShow">{{cancelTxt}}</div>
+      <div class="modalBtn" v-if="footerBtn.length!==0" v-for="(item,index) in footerBtn" @click="item.event">{{item.name}}</div>
     </div>
   </div>
 </template>
@@ -14,6 +15,12 @@
   export default {
     name:'modal',
     props:{
+      footerBtn:{
+        type:Array,
+        default:function(){
+          return []
+        }
+      },
       id:{
         type:String,
         default:'id'
@@ -93,7 +100,7 @@
       //border-top:1px solid #eee;
       overflow:hidden;
       padding:5px 10px;
-      .makesure,.makecancel{
+      .makesure,.makecancel,.modalBtn{
         min-width:80px;
         padding:0 10px;
         height:32px;

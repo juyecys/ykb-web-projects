@@ -22,33 +22,9 @@ const state = {
   miniMenuWidth:'50px',
   largeMenuWidth:'200px',
   hadLogin:false,
-  usersInfos:{
-    usersResults:[],
-    usersPageInfo:{}
-  },
-  qrcodeInfos:{
-    qrcodeResults:[],
-    qrcodePageInfo:{}
-  },
-  wxMenuInfos:{
-    wxMenuResults:[],
-    wxMenuPageInfo:{}
-  },
-  wxMessages:[],
-  channelWxMessages:[],
-  testMessagesPeople:'',
-  uploadImageUrl:'',
-  channelGroupList:{
-    result:[],
-    pageInfo:[]
-  },
-  thisChannelGroupList:[],
-  allChannelGroupList:[],
-  allChannelList:[],
-  thisQrcodePersonalCount:0,
 
-  clickOver:true
-
+  clickOver:true,
+  userMenuList:[],//获取该用户拥有权限的菜单列表
 }
 
 export default new Vuex.Store({

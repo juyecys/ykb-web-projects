@@ -6,17 +6,17 @@
       </div>
       <div id="sideBarFunction" >
         <ul>
-          <li v-if="functionItems.length>0"  v-for="item in functionItems" @click="showChild(item)" :path="item.menuResource" class="menu">
-            <div :class="item.action?'funcItem actionPatient':'funcItem'" :pagename="'/'+item.menuName"  >
-              <i><img :src="'./static/images/'+item.menuCode+'.png'" alt="" /></i>
-              <span>{{item.menuName}}</span>
+          <li v-if="functionItems.length>0"  v-for="item in functionItems" @click="showChild(item)" :path="item.resource" class="menu">
+            <div :class="item.action?'funcItem actionPatient':'funcItem'" :pagename="'/'+item.name"  >
+              <i><img :src="'./static/images/'+item.code+'.png'" alt="" /></i>
+              <span>{{item.name}}</span>
             </div>
             <div v-if="item.subMenu.length >0" class="funcItemChild" v-show="item.action">
               <ul>
-                <li v-for="itemChild in item.subMenu" class="itemChild" @click="goToPage('/'+itemChild.parentMenuCode+'/'+itemChild.menuResource)">
-                  <div :class="itemChild.action?'itemChildContainer actionChild':'itemChildContainer'" :pagename="'/'+item.menuName+'/'+itemChild.menuName">
+                <li v-for="itemChild in item.subMenu" class="itemChild" @click="goToPage('/'+itemChild.parentMenuCode+'/'+itemChild.resource)">
+                  <div :class="itemChild.action?'itemChildContainer actionChild':'itemChildContainer'" :pagename="'/'+item.name+'/'+itemChild.name">
                     <!--<i><img src="../../static/images/logo.png" alt="" /></i>-->
-                    <span>{{itemChild.menuName}}</span>
+                    <span>{{itemChild.name}}</span>
                   </div>
                 </li>
               </ul>
@@ -31,19 +31,19 @@
       </div>
       <div class="menuIcons">
         <ul>
-          <li v-if="functionItems.length>0" v-for="item in functionItems" :path="item.menuResource"  @mouseenter="showChildMenu(item.menuCode)" @mouseleave="hideChildMenu(item.menuCode)">
-            <i ><img :src="'./static/images/'+item.menuCode+'.png'" alt=""></i>
-            <div class="childMenu"  :id="item.menuCode" >
-              <div class="parentMenuTitle">{{item.menuName}}</div>
+          <li v-if="functionItems.length>0" v-for="item in functionItems" :path="item.resource"  @mouseenter="showChildMenu(item.code)" @mouseleave="hideChildMenu(item.code)">
+            <i ><img :src="'./static/images/'+item.code+'.png'" alt=""></i>
+            <div class="childMenu"  :id="item.code" >
+              <div class="parentMenuTitle">{{item.name}}</div>
               <ul v-if="item.subMenu.length >0">
-                <li v-for="itemChild in item.subMenu" @click="goToPage('/'+itemChild.parentMenuCode+'/'+itemChild.menuResource)">
-                  <div class="itemChildContainer" :pagename="'/'+item.menuName+'/'+itemChild.menuName">
-                    <span>{{itemChild.menuName}}</span>
+                <li v-for="itemChild in item.subMenu" @click="goToPage('/'+itemChild.parentMenuCode+'/'+itemChild.resource)">
+                  <div class="itemChildContainer" :pagename="'/'+item.name+'/'+itemChild.name">
+                    <span>{{itemChild.name}}</span>
                   </div>
                 </li>
               </ul>
-              <div class="itemChildContainer" :pagename="'/'+item.menuName" @click="goToPage('/'+itemChild.parentMenuCode+'/'+itemChild.menuResource)" v-else>
-                <span>{{item.menuName}}</span>
+              <div class="itemChildContainer" :pagename="'/'+item.name" @click="goToPage('/'+itemChild.parentMenuCode+'/'+itemChild.resource)" v-else>
+                <span>{{item.name}}</span>
               </div>
             </div>
           </li>
@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import config from '../config/menu.config.json'
+//import config from '../config/menu.config.json'
   export default {
     name:'sideBar',
     data(){
@@ -63,6 +63,44 @@ import config from '../config/menu.config.json'
         isShowChild:false,
         showIndex:-1,
         pid:''
+      }
+    },
+    watch:{
+      userMenuList(val){
+        console.log('watch',val)
+        let config = val,
+          path = this.$router.history.current.path,
+          parent = path.split('/')[1],
+          sub = path.split('/')[2],
+          pathname='';
+        for(let i = 0,l = config.length;i<l;i++){
+          if(config[i].isParentMenu){
+            let parentMenu = config[i]
+            parentMenu.action = false
+            parentMenu.subMenu = []
+            if(parent !== undefined){
+              if(config[i].code === parent){
+                parentMenu.action = true
+                pathname+=parentMenu.name;
+              }
+            }
+            for(let j=0;j<l;j++){
+              if(config[j].parentMenuCode === config[i].code){
+                config[j].action = false
+                if(sub !== undefined){
+                  if(config[j].code === sub){
+                    config[j].action = true
+                    console.log(config[j].code , sub,config[j].code === sub)
+                    this.$store.dispatch('changePathName','/'+pathname+'/'+config[j].name)
+                  }
+                }
+                parentMenu.subMenu.push(config[j])
+              }
+            }
+            this.functionItems.splice(0,0,parentMenu)
+          }
+        }
+        this.functionItems.reverse()
       }
     },
     computed:{
@@ -75,40 +113,14 @@ import config from '../config/menu.config.json'
       largeMenuWidth(){
         return this.$store.state.largeMenuWidth
       },
+      userMenuList(){
+        console.log(this.$store.state.userMenuList)
+        return this.$store.state.userMenuList
+      }
     },
     mounted(){
-      let path = this.$router.history.current.path,
-        parent = path.split('/')[1],
-        sub = path.split('/')[2],
-        pathname='';
-      for(let i = 0,l = config.length;i<l;i++){
-        if(config[i].isParentMenu){
-          let parentMenu = config[i]
-          parentMenu.action = false
-          parentMenu.subMenu = []
-          if(parent !== undefined){
-            if(config[i].menuCode === parent){
-              parentMenu.action = true
-              pathname+=parentMenu.menuName;
-            }
-          }
-          for(let j=0;j<l;j++){
-            if(config[j].parentMenuCode === config[i].menuCode){
-              config[j].action = false
-              if(sub !== undefined){
-                if(config[j].menuCode === sub){
-                  config[j].action = true
-                  console.log(config[j].menuCode , sub,config[j].menuCode === sub)
-                  this.$store.dispatch('changePathName','/'+pathname+'/'+config[j].menuName)
-                }
-              }
-              parentMenu.subMenu.push(config[j])
-            }
-          }
-          this.functionItems.splice(0,0,parentMenu)
-        }
-      }
-      this.functionItems.reverse()
+      this.$store.dispatch('getUserMenuList',{nowPage:1,pageSize:100})
+
     },
     methods:{
       showChildMenu(id){
@@ -124,7 +136,7 @@ import config from '../config/menu.config.json'
         if(target.className.indexOf('funcItem')>-1){
           let key = 0,_index=0
           for(let i of this.functionItems){
-            if(i.menuCode !== item.menuCode){
+            if(i.code !== item.code){
               i.action = false
             }else{
               key = _index
@@ -134,7 +146,7 @@ import config from '../config/menu.config.json'
           }
           this.functionItems.splice(key,1,item)
           if(!item.hasOwnProperty('childrenFunc')){
-            this.goToPage(item.menuResource)
+            this.goToPage(item.resource)
           }
         }
       },
@@ -147,7 +159,10 @@ import config from '../config/menu.config.json'
           target.className = 'itemChildContainer actionChild'
         }
         this.$store.dispatch('changePathName',target.getAttribute('pagename'))
-        this.$router.push(path)
+        console.log(path)
+        if(path !== undefined){
+          this.$router.push(path)
+        }
       }
     }
   }

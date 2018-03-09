@@ -23,6 +23,7 @@ router.beforeEach((to, from, next) => {
   if(to.path ==='/login'){
     window.sessionStorage.setItem('loginToPage',from.name)
   }
+  console.log(to.name)
   next()
 })
 

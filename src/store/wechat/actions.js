@@ -71,7 +71,17 @@ export const getQrcodeCount = ({commit},qrcodeScene) =>{
     })
 }
 
-
+export const inquirySomeone = ({commit},data) =>{
+  axios.get('/ykb/mg/private/wechat/qrcode/',{params:data})
+    .then(res=>{
+      console.log(res)
+      if (res.data.code === 2000) {
+        commit(types.INQUIRYSOMEONE,res.data.result)
+      } else {
+        commit(rootTypes.ERRORCODE,{error:res.data.desc,code:res.data.code})
+      }
+    })
+}
 //微信菜单增删改查,生成菜单
 export const addWXMenu = ({commit},{datas}) =>{
   console.log(datas,'addWXMenu')
@@ -90,7 +100,7 @@ export const addWXMenu = ({commit},{datas}) =>{
 
 export const deleteWxMenu = ({commit},id) =>{
   console.log(id)
-  axios.post('/ykb/mg/private/wechat/menu/delete', id)
+  axios.post('/ykb/mg/private/wechat/menu/delete', {id:id})
     .then((res) => {
       if (res.data.code === 2000) {
         commit(types.DELETEWXMENU,id)

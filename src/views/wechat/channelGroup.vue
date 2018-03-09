@@ -99,14 +99,14 @@
         btns:[{
           name:'新增',
           event:this.addChannelGroup
-        }/*,{
+        },{
           name:'查询',
           style:'successBtn',
           event:this.inQuiryChannelGroup
         },{
           name:'查询全部',
           event:this.inQuiryAllChannelGroup
-        }*/],
+        }],
         showInquiryModal:false,
         showModal:false,
         showChannelGroupListModal:false,
@@ -123,7 +123,7 @@
     methods:{
       inQuiryAllChannelGroup(){
         this.isToPagination = true
-        this.$store.dispatch('getChannelGroup')
+        this.$store.dispatch('getChannelGroup',{pageSize:10,nowPage:1})
       },
       channelGroupStatusChange(bool){
         console.log(bool,'channelGroupStatusChange')

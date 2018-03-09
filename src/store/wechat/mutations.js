@@ -47,8 +47,22 @@ const mutations = {
     console.log(data)
     state.allChannelGroupList = data
   },
+  [types.INQUIRYSOMEONE](state,data){
+    let result = data.result
+    state.qrcodeResults = []
+    state.qrcodePageInfo = {
+      nowPage: data.nowPage,
+      pageSize: data.pageSize,
+      start: data.start,
+      totalCount: data.totalCount,
+      totalPage: data.totalPage
+    }
+    console.log(data)
+    for (let i = 0, len = result.length; i < len; i++) {
+      state.qrcodeResults.push(result[i])
+    }
+  },
 //渠道二维码，获取该渠道用户关注数
-
   [types.SETQRCODECOUNT](state, count){
     state.thisQrcodePersonalCount = count
   },
@@ -86,7 +100,8 @@ const mutations = {
 
 //微信菜单增删改查,生成菜单
   [types.ADDWXMENU](state, data){
-    state.wxMenuResults.push(data)
+    state.wxMenuResults.unshift(data)
+    console.log(state.wxMenuResults)
     state.wxMenuPageInfo.totalCount++
     Toast.success({
       msg: '新增菜单成功！'
@@ -96,8 +111,10 @@ const mutations = {
     Toast.success({
       msg: '删除微信菜单成功'
     })
+    console.log(id)
     let wxMenuResults = state.wxMenuResults
     for (let i = wxMenuResults.length - 1; i >= 0; i--) {
+      console.log(wxMenuResults[i].id , id,wxMenuResults[i].id === id)
       if (wxMenuResults[i].id === id) {
         wxMenuResults.splice(i, 1)
         state.wxMenuPageInfo.totalCount--

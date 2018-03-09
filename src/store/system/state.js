@@ -3,6 +3,11 @@
  */
 const state = {
   userLists:[],
-  usersPageInfo:{}
+  usersPageInfo:{},
+  roleLists:[],
+  rolesPageInfo:{},
+  roleList:[],//获取所有的角色
+  menuList:[],
+  menuPageInfo:{}
 }
 export default state;

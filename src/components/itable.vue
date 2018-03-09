@@ -167,7 +167,7 @@
     width:100%;
     padding: 12px;
     .tableContainer{
-      min-height:500px;
+      min-height:460px;
     }
     .pagination{
       width:100%;
