@@ -1,7 +1,0 @@
-/**
- * Created by FuxiaoKe on 2018/3/5.
- */
-export const GETUSERS = 'GETUSERS';
-export const SEARCHUSERLIST = 'SEARCHUSERLIST';
-export const ALLCHANNELLIST = 'ALLCHANNELLIST';
-export const ALLCHANNELGROUPLIST = 'ALLCHANNELGROUPLIST';
