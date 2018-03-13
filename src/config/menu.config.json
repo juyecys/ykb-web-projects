@@ -1,0 +1,97 @@
+[{
+  "id":"787b7b11-2c23-4355-b167-72be75c3fe88",
+  "name":"权限管理",
+  "code":"system",
+  "resourceId":"",
+  "resource":"",
+  "sequence":0,
+  "isParentMenu":true
+},{
+  "id":"0ec0ce8b-caf2-47ee-bcd9-bd547acc88b8",
+  "name":"系统用户",
+  "code":"users",
+  "resourceId":"087451a7-651b-460a-97ac-8cbaf93faaa1",
+  "resource":"users",
+  "sequence":0,
+  "isParentMenu":false,
+  "parentMenuCode":"system"
+},{
+  "id":"01d8200c-38d5-4c37-8b53-8a7753efe992",
+  "name":"系统角色",
+  "code":"role",
+  "resourceId":"4c51fb62-a05c-4385-b668-22c54ff43403",
+  "resource":"role",
+  "sequence":0,
+  "isParentMenu":false,
+  "parentMenuCode":"system"
+},{
+  "id":"626ac3b4-684d-4c97-a472-21af8cd1595c",
+  "name":"菜单管理",
+  "code":"menuManage",
+  "resourceId":"25560fee-4abf-4a1f-a369-47d1b2e66d56",
+  "resource":"menuManage",
+  "sequence":0,
+  "isParentMenu":false,
+  "parentMenuCode":"system"
+},{
+  "id":"e48b0478-1318-4e96-8ae7-249d46b58b43",
+  "name":"微信模块",
+  "code":"wechat",
+  "resourceId":"",
+  "resource":"",
+  "sequence":0,
+  "isParentMenu":true
+},{
+  "id":"71518891-cff5-48f8-bc61-ac58429ff263",
+  "name":"渠道分组",
+  "code":"channelGroup",
+  "resourceId":"89f4392b-d1e2-43db-abb3-c1edafbd56bf",
+  "resource":"channelGroup",
+  "sequence":0,
+  "isParentMenu":false,
+  "parentMenuCode":"wechat"
+},{
+  "id":"02077354-5fe2-457b-a1f1-cd46f9e1c12c",
+  "name":"公众号菜单",
+  "code":"wxmenu",
+  "resourceId":"8f4e6b15-f512-44a7-a107-fd60eee3769c",
+  "resource":"wxmenu",
+  "sequence":0,
+  "isParentMenu":false,
+  "parentMenuCode":"wechat"
+},{
+  "id":"acfca9b0-e32e-4b1a-98b1-86c8c6556cd1",
+  "name":"渠道二维码信息",
+  "code":"channelQrcode",
+  "resourceId":"42557975-5525-48b3-a2eb-ec5d321d6d46",
+  "resource":"channelQrcode",
+  "sequence":0,
+  "isParentMenu":false,
+  "parentMenuCode":"wechat"
+},{
+  "id":"b23e4e6b-5499-48f3-985a-5038b5e33d5c",
+  "name":"关注公众号后消息",
+  "code":"messageForWxFollow",
+  "resourceId":"d1f74849-152c-471d-8e49-6041e0886c0c",
+  "resource":"messageForWxFollow",
+  "sequence":0,
+  "isParentMenu":false,
+  "parentMenuCode":"wechat"
+},{
+  "id":"7204f07f-7a2c-49cf-a44b-c0c05240a9a4",
+  "name":"用户模块",
+  "code":"users",
+  "resourceId":"",
+  "resource":"",
+  "sequence":0,
+  "isParentMenu":true
+},{
+  "id":"a637ac8f-d311-462f-92e6-9d508b2d026d",
+  "name":"用户信息",
+  "code":"usersInfo",
+  "resourceId":"7b196ad7-a66c-4bb9-b6f2-3bf502085e57",
+  "resource":"usersInfo",
+  "sequence":0,
+  "isParentMenu":false,
+  "parentMenuCode":"users"
+}]
