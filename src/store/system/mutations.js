@@ -114,6 +114,10 @@ const mutations = {
         }
       }
     },
+  [types.ADDSYSTEMMENU](state,data){
+    state.menuList.unshift(data)
+  },
+
 }
 
 

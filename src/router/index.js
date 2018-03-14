@@ -17,6 +17,7 @@ import Users from '../views/system/users';
 import UsersInfo from '../views/users/usersInfo';
 //babyInsurance
 import OrderList from '../views/babyInsurance/orderList';
+import LatentOrder from '../views/babyInsurance/latentOrder';
 Vue.use(Router)
 
 export default new Router({
@@ -89,6 +90,11 @@ export default new Router({
       path: '/babyInsurance/orderList',
       name: 'orderList',
       component: OrderList
+    },
+    {
+      path: '/babyInsurance/latentOrder',
+      name: 'latentOrder',
+      component: LatentOrder
     }
   ]
 })

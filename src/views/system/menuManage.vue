@@ -3,7 +3,7 @@
     <operationBtn :btns="btns"></operationBtn>
     <itable
       :ths="['菜单名称','是否父菜单','序号','链接字符串','操作']"
-      :tds="['name','isParentMenu','sequence','resource','##[static/images/write.png,static/images/delete.png]##']"
+      :tds="['name','isParentMenu','sequence','resource','##[static/images/write.png]##']"
       :tableData="menuList"
       :totalPage="menuPageInfo.totalPage"
       :totalCount="menuPageInfo.totalCount"
@@ -13,20 +13,58 @@
       @pageSizeHadChange="changePageSize"
       @tdImgClick="operateThisRow"
     ></itable>
-    <modal :show="showEditSystemMenu" title="编辑系统菜单" @makesure="toEditSystemMenu" @cancel="toCancelEditSystemMenu" id="showEditSystemMenu">
-      <div class="editSystemMenu">
+    <modal :show="showEditSystemMenu" title="编辑系统菜单" @makesure="toEditSystemMenu" @cancel="toHideSystemMenuModal(0)" id="showEditSystemMenu">
+      <div class="modalItemContainer">
         <div class="modalItem">
           <div class="itemName">菜单名称</div>
           <div class="itemValue">
             <input type="text" v-model="menuName" placeholder="请输入菜单名称">
           </div>
         </div>
-      </div>
-      <div class="editSystemMenu">
         <div class="modalItem">
           <div class="itemName">菜单序号</div>
           <div class="itemValue">
             <input type="text" v-model.number="menuSequence" placeholder="请输入菜单序号">
+          </div>
+        </div>
+      </div>
+    </modal>
+    <modal :show="showAddSystemMenu" title="新增系统菜单" @makesure="toAddSystemMenu" @cancel="toHideSystemMenuModal(1)" id="showAddSystemMenu">
+      <div class="modalItemContainer">
+        <div class="modalItem">
+          <div class="itemName">Name</div>
+          <div class="itemValue">
+            <input type="text" v-model="aMenuName" placeholder="请输入菜单名称">
+          </div>
+        </div>
+        <div class="modalItem">
+          <div class="itemName">Code</div>
+          <div class="itemValue">
+            <input type="text" v-model="aMenuCode" placeholder="请输入菜单Code">
+          </div>
+        </div>
+        <div class="modalItem">
+          <div class="itemName">IsParentMenu</div>
+          <div class="itemValue">
+            <choice :choiceDatas="aMenuIsParentMenu"></choice>
+          </div>
+        </div>
+        <div class="modalItem" v-show="aMenuIsParentMenu[1].status">
+          <div class="itemName">Resource</div>
+          <div class="itemValue">
+            <input type="text" v-model="aMenuResource" placeholder="请输入菜单Resource">
+          </div>
+        </div>
+        <div class="modalItem" v-show="aMenuIsParentMenu[1].status">
+          <div class="itemName">ParentCode</div>
+          <div class="itemValue">
+            <input type="text" v-model="aMenuParentMenuCode" placeholder="请输入父菜单名称">
+          </div>
+        </div>
+        <div class="modalItem">
+          <div class="itemName">menuSequence</div>
+          <div class="itemValue">
+            <input type="text" v-model.number="aMenuSequence" placeholder="请输入菜单序号">
           </div>
         </div>
       </div>
@@ -37,7 +75,7 @@
   import operationBtn from '../../components/operationBtn'
   import itable from '../../components/itable'
   import modal from '../../components/modal'
-  //import choice from '../../components/choice'
+  import choice from '../../components/choice'
   //import dateFormat from '../../components/dateFormat';
   import maskLayer from '../../components/maskLayer'
   import toast from '../../components/toast'
@@ -47,6 +85,7 @@
       operationBtn,
       itable,
       modal,
+      choice
     },
     computed:{
       menuList(){
@@ -70,19 +109,93 @@
     },
     data(){
       return {
+        //新增系统菜单
+        showAddSystemMenu:false,
+        aMenuName:'',
+        aMenuCode:'',
+        aMenuSequence:'',
+        aMenuResource:'',
+        aMenuParentMenuCode:'',
+        aMenuIsParentMenu:[{
+          name:'YES',
+          value:true,
+          status:false
+        },{
+          name:'NO',
+          value:false,
+          status:true
+        }],
+        //结束新增系统菜单
         menuName:'',
         menuSequence:0,
         menuId:'',
         showEditSystemMenu:false,
         btns:[{
-          name:'查询',
-          event:this.inquiryUserInfo
+          name:'新增菜单',
+          event:this.addSystemMenu
         }]
       }
     },
     methods:{
-      toCancelEditSystemMenu(){
-        this.showEditSystemMenu = false
+      toAddSystemMenu(){
+        let self= this,
+          canSubmit=true,
+          arr = [{
+            key:'name',
+            value:self.aMenuName
+          },{
+            key:'code',
+            value:self.aMenuCode
+          },{
+            key:'sequence',
+            value:self.aMenuSequence
+          }],
+          obj = {}
+        for(let i=arr.length-1;i>=0;i--){
+          if(self.noEmpty(arr[i].value)){
+            obj[arr[i].key] = arr[i].value
+          }else{
+            toast.error({
+              msg:'请完整填写系统菜单内容！'
+            })
+            canSubmit = false
+            break;
+          }
+        }
+        if(self.aMenuIsParentMenu[1].status){
+          if(self.noEmpty(self.aMenuParentMenuCode) && self.noEmpty(self.aMenuResource)){
+            obj.isParentMenu = false
+            obj.resource = self.aMenuResource
+            obj.parentMenuCode = self.aMenuParentMenuCode
+          }else{
+            toast.error({
+              msg:'请填写系统父菜单Code！'
+            })
+            canSubmit = false
+            return
+          }
+        }else{
+          obj.isParentMenu = true
+        }
+
+        if(canSubmit){
+          self.$store.dispatch('addSystemMenu',obj)
+          self.toHideSystemMenuModal(1)
+        }
+      },
+      noEmpty(val){
+        if(val !== '' && val !== null || (typeof val === 'number' && val !== 0)){
+          return true
+        }else{
+          return false
+        }
+      },
+      toHideSystemMenuModal(code){
+        if(code === 0){
+          this.showEditSystemMenu = false
+        }else{
+          this.showAddSystemMenu  = false
+        }
         maskLayer.hide()
       },
       toEditSystemMenu(){
@@ -101,8 +214,6 @@
           this.showEditSystemMenu = true
           maskLayer.show()
         }
-
-
       },
       changePageSize(size){
         this.$store.dispatch('getMenuList',{nowPage:1,pageSize:size})
@@ -110,8 +221,9 @@
       toNextPage(nextPage){
         this.$store.dispatch('getMenuList',{nowPage:nextPage,pageSize:this.menuPageInfo.pageSize})
       },
-      inquiryUserInfo(){
-        console.log('inquiryUserInfo')
+      addSystemMenu(){
+        this.showAddSystemMenu  = true
+        maskLayer.show()
       }
     }
   }
@@ -124,7 +236,7 @@
       min-height:32px;
       margin-top:10px;
       .itemName{
-        width:100px;
+        width:120px;
         padding-top:5px;
         padding-right:20px;
         text-align: right;

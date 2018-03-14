@@ -7,6 +7,7 @@
 import * as types from './mutation-type'
 import * as rootTypes from  '../mutation-type'
 import axios from 'axios';
+//获取订单列表
 export const getBabyInsuranceOrderList = ({commit},{nowPage,pageSize}) =>{
   axios.post('/ykb/mg/private/order/page',{page:{nowPage,pageSize}})
     .then(res=>{
@@ -21,3 +22,53 @@ export const getBabyInsuranceOrderList = ({commit},{nowPage,pageSize}) =>{
       commit(rootTypes.ERRORSTATUS,error)
     })
 }
+//搜索订单
+export const searchOrder = ({commit},obj) =>{
+  axios.post('/ykb/mg/private/order/page',obj)
+    .then(res=>{
+      console.log(res,types)
+      if(res.data.code === 2000){
+        commit(types.BABYINSURANCEORDERLIST,res.data.result)
+      }else{
+        commit(rootTypes.ERRORCODE,{error:res.data.desc,code:res.data.code})
+      }
+    })
+    .catch(error=>{
+      commit(rootTypes.ERRORSTATUS,error)
+    })
+}
+//获取投保意向列表
+export const getLatentOrder = ({commit},obj) =>{
+  axios.post('/ykb/mg/private/insure/page',{page:obj})
+    .then(res=>{
+      console.log(res,types)
+      if(res.data.code === 2000){
+        commit(types.LATENTORDERLIST,res.data.result)
+      }else{
+        commit(rootTypes.ERRORCODE,{error:res.data.desc,code:res.data.code})
+      }
+    })
+    .catch(error=>{
+      commit(rootTypes.ERRORSTATUS,error)
+    })
+}
+//获取投保意向列表
+export const searchLatentOrder = ({commit},obj) =>{
+  axios.post('/ykb/mg/private/insure/page',obj)
+    .then(res=>{
+      console.log(res,types)
+      if(res.data.code === 2000){
+        commit(types.LATENTORDERLIST,res.data.result)
+      }else{
+        commit(rootTypes.ERRORCODE,{error:res.data.desc,code:res.data.code})
+      }
+    })
+    .catch(error=>{
+      commit(rootTypes.ERRORSTATUS,error)
+    })
+}
+
+
+
+
+

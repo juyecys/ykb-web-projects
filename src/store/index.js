@@ -26,6 +26,7 @@ const state = {
 
   clickOver:true,
   userMenuList:[],//获取该用户拥有权限的菜单列表
+  provinceList:[]
 }
 
 export default new Vuex.Store({

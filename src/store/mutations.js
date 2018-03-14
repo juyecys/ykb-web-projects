@@ -63,7 +63,11 @@ export const mutations = {
     console.log(data)
     state.userMenuList = data.result
   },
-
+  //获取省份信息
+  [types.PROVINCELIST](state,data){
+    console.log(data)
+    state.provinceList = data
+  },
 
 
 

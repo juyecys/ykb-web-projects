@@ -149,6 +149,22 @@ export const editSystemMenu = ({dispatch,commit},{id,name,sequence})=>{
       commit(rootTypes.ERRORSTATUS,error)
     })
 }
+//新增系统菜单
+export const addSystemMenu = ({dispatch,commit},obj)=>{
+  axios.post('/ykb/mg/private/menu/',obj)
+    .then(res=>{
+      console.log(res,types)
+      if(res.data.code === 2000){
+        commit(types.ADDSYSTEMMENU,res.data.result)
+        dispatch('getUserMenuList',{nowPage:1,pageSize:100})
+      }else{
+        commit(rootTypes.ERRORCODE,{error:res.data.desc,code:res.data.code})
+      }
+    })
+    .catch(error=>{
+      commit(rootTypes.ERRORSTATUS,error)
+    })
+}
 
 
 

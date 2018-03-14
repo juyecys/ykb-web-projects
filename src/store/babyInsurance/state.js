@@ -6,7 +6,9 @@
 */
 const state = {
   orderList:[],
-  orderPageInfo:{}
+  orderPageInfo:{},
+  latentOrderList:[],
+  latentOrderPageInfo:{}
 }
 
 export default state;

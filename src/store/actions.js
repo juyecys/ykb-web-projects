@@ -41,6 +41,21 @@ export const getUserMenuList = ({commit},{nowPage,pageSize}) =>{
     })
 }
 
+export const getProvinceList = ({commit}) =>{
+  axios.get('/ykb/mg/private/province/')
+    .then(res=>{
+      console.log(res,types)
+      if(res.data.code === 2000){
+        commit(types.PROVINCELIST,res.data.result)
+      }else{
+        commit(types.ERRORCODE,{error:res.data.desc,code:res.data.code})
+      }
+    })
+    .catch(error=>{
+      commit(types.ERRORSTATUS,error)
+    })
+}
+
 export const toTest = ({commit}) =>{
   commit(types.TEST)
 }

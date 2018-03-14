@@ -14,12 +14,12 @@
       @pageSizeHadChange="changePageSize"
       @tdImgClick="operateThisRow"
     ></itable>
-    <modal :show="orderInfoModal" title="订单详情" @makesure="hideModel(0)" confirmTxt="关闭" :cancelShow="false" id="orderInfoModal" width="700">
+    <modal :show="orderInfoModal" title="订单详情" @makesure="hideModel(0)" confirmTxt="关闭" :cancelShow="false" id="orderInfoModal" :width="700">
       <div class="showOrderInfo">
         <div class="modalItemContainer">
           <div class="modalItem">
-            <sspan class="itemName">openId：</sspan>
-            <sspan class="itemValue">{{thisOrderInfo.openId}}</sspan>
+            <span class="itemName">openId：</span>
+            <span class="itemValue">{{thisOrderInfo.openId}}</span>
           </div>
           <div class="modalItem">
             <span class="itemName">订单号：</span>
@@ -124,7 +124,7 @@
     <modal :show="inquiryOrderModal" title="查询订单" @makesure="inquiryOrderList" @cancel="hideModel(1)" :footerBtn="inquiryOrderBtn" confirmTxt="查询"  id="inquiryOrderModal">
       <div class="inquiryOrder">
         <div class="modalItem">
-          <div class="itemName">订单Id</div>
+          <div class="itemName">订单号</div>
           <div class="itemValue">
             <input type="text" v-model="inquiryOrderId">
           </div>
@@ -179,8 +179,8 @@
             <search-input
               :value.sync="inquiryOrderProvince"
               :searchkey.sync="inquiryOrderProvinceId"
-              :searchData="[]"
-              :searchKeyValue="[]"
+              :searchData="provinceList.name"
+              :searchKeyValue="provinceList.id"
               :onlySelect="true"
             ></search-input>
           </div>
@@ -214,7 +214,6 @@
   import itable from '../../components/itable'
   import modal from '../../components/modal'
   import choice from '../../components/choice'
-  import dateFormat from '../../components/dateFormat';
   import maskLayer from '../../components/maskLayer'
   import toast from '../../components/toast'
   export default {
@@ -296,10 +295,20 @@
       },
       orderPageInfo(){
         return this.$store.state.babyInsurance.orderPageInfo
+      },
+      provinceList(){
+        console.log(this.$store.state.provinceList)
+        let obj = this.$store.state.provinceList,province={id:[],name:[]}
+        obj.map(item=>{
+          province.name.push(item.name)
+          province.id.push(item.id)
+        })
+        return province
       }
     },
     mounted(){
       this.$store.dispatch('getBabyInsuranceOrderList',{nowPage:1,pageSize:10})
+      this.$store.dispatch('getProvinceList')
     },
     data(){
       return {
@@ -317,8 +326,9 @@
           name:'清除条件',
           event:this.cleanInquiryValue
         }],
+        inquiryOrderObj:{},
         //结束
-        inquiryOrderModal:true,
+        inquiryOrderModal:false,
         orderInfoModal:false,
         thisOrderInfo:{},
         btns:[{
@@ -327,8 +337,7 @@
           style:'successBtn'
         },{
           name:'查询全部',
-          event:this.inquiryAllOrder,
-          style:'successBtn'
+          event:this.inquiryAllOrder
         },]
       }
     },
@@ -343,9 +352,61 @@
           this.inquiryHospital=''
           this.inquiryOrderStatusText=''
           this.inquiryOrderStatus=''
+          this.inquiryOrderObj = {}
       },
       inquiryOrderList(){
+        let self = this,
+          obj = {},
+          arr = [{
+            key:'orderNumber',
+            value:this.inquiryOrderId
+          },{
+            key:'createdDateStart',
+            value:this.inquiryStartDate
+          },{
+            key:'createdDateEnd',
+            value:this.inquiryEndDate
+          },{
+            key:'provinceId',
+            value:this.inquiryOrderProvinceId
+          },{
+            key:'hospitalName',
+            value:this.inquiryHospital
+          },{
+            key:'insuranceAmount',
+            value:this.inquiryOrderAmount
+          },{
+            key:'status',
+            value:this.inquiryOrderStatus
+          }];
+        for(let i=arr.length-1;i>=0;i--){
+          if(self.noEmpty(arr[i].value)){
+            obj[arr[i].key] = arr[i].value
+          }
+        }
 
+        if(Object.getOwnPropertyNames(obj).length !==0){
+          console.log(obj)
+          obj.page = {
+            nowPage:1,
+            pageSize:10
+          }
+          this.inquiryOrderObj = Object.assign({},this.inquiryOrderObj,obj)
+          this.$store.dispatch('searchOrder',obj)
+          this.hideModel(1)
+        }else{
+          toast.error({
+            msg:'请输入至少一个搜索条件！'
+          })
+        }
+
+      },
+      noEmpty(val){
+        if(val !== '' && val !== null || (typeof val === 'number' && val !== 0)){
+          return true
+        }else{
+          return false
+        }
       },
       operateThisRow(index,_index){
         console.log(index,_index,)
@@ -360,18 +421,43 @@
         }
       },
       changePageSize(size){
-        this.$store.dispatch('getBabyInsuranceOrderList',{nowPage:1,pageSize:size})
+        if(Object.getOwnPropertyNames(this.inquiryOrderObj).length !==0){
+          this.inquiryOrderObj.page = {
+            nowPage:1,
+            pageSize:size
+          }
+          this.$store.dispatch('searchOrder',this.inquiryOrderObj)
+        }else{
+          this.$store.dispatch('getBabyInsuranceOrderList',{nowPage:1,pageSize:size})
+        }
       },
       toNextPage(nextPage){
-        this.$store.dispatch('getBabyInsuranceOrderList',{nowPage:nextPage,pageSize:this.orderPageInfo.pageSize})
+        if(Object.getOwnPropertyNames(this.inquiryOrderObj).length !==0){
+          this.inquiryOrderObj.page = {
+            nowPage:nextPage,
+            pageSize:this.orderPageInfo.pageSize
+          }
+          this.$store.dispatch('searchOrder',this.inquiryOrderObj)
+        }else{
+          this.$store.dispatch('getBabyInsuranceOrderList',{nowPage:nextPage,pageSize:this.orderPageInfo.pageSize})
+        }
+      },
+      inquiryAllOrder(){
+        this.$store.dispatch('getBabyInsuranceOrderList',{nowPage:1,pageSize:10})
       },
       inquiryOrder(){
         console.log('inquiryOrder')
+        this.cleanInquiryValue()
+        this.inquiryOrderModal = true;
+        maskLayer.show()
       },
       hideModel(id){
         switch (id){
           case 0:
             this.orderInfoModal = false;
+            break;
+          case 1:
+            this.inquiryOrderModal = false;
             break;
         }
         maskLayer.hide()
