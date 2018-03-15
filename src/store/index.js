@@ -23,7 +23,7 @@ const state = {
   miniMenuWidth:'50px',
   largeMenuWidth:'200px',
   hadLogin:false,
-
+  uploadImageUrl:'',
   clickOver:true,
   userMenuList:[],//获取该用户拥有权限的菜单列表
   provinceList:[]

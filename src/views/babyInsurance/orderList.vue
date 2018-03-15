@@ -205,6 +205,27 @@
         </div>
       </div>
     </modal>
+    <modal :show="editOrderModal" title="编辑" @makesure="editOneOrder" @cancel="hideModel(2)"  confirmTxt="确定"  id="editOrderModal">
+      <div class="inquiryOrder">
+        <div class="modalItem">
+          <div class="itemName">状态</div>
+          <div class="itemValue">
+            <search-input
+              :value.sync="orderStatus"
+              :searchData="['已结束']"
+              :onlySelect="true"
+              :canEdit="editOrderObj.status === 'UNDERWRITE'"
+            ></search-input>
+          </div>
+        </div>
+        <div class="modalItem">
+          <div class="itemName">备注</div>
+          <div class="itemValue">
+            <textarea v-model="orderRemark"></textarea>
+          </div>
+        </div>
+      </div>
+    </modal>
   </div>
 </template>
 
@@ -307,11 +328,18 @@
       }
     },
     mounted(){
-      this.$store.dispatch('getBabyInsuranceOrderList',{nowPage:1,pageSize:10})
-      this.$store.dispatch('getProvinceList')
+      if(this.orderList.length === 0){
+        this.$store.dispatch('getBabyInsuranceOrderList',{nowPage:1,pageSize:10})
+        this.$store.dispatch('getProvinceList')
+      }
+
     },
     data(){
       return {
+        orderRemark:'',
+        orderStatus:'',
+        editOrderObj:{},
+        editOrderModal:false,
         //查询订单变量
         inquiryOrderId:'',
         inquiryStartDate:'',
@@ -342,6 +370,11 @@
       }
     },
     methods:{
+      editOneOrder(){
+        let data = this.editOrderObj
+        this.$store.dispatch('editOneOrder',{id:data.id,status:this.orderStatus!=='已结束'?data.status:'END',remark:this.orderRemark})
+        this.hideModel(2)
+      },
       cleanInquiryValue(){
           this.inquiryOrderId=''
           this.inquiryStartDate=''
@@ -385,7 +418,7 @@
           }
         }
 
-        if(Object.getOwnPropertyNames(obj).length !==0){
+        if(JSON.stringify(obj)!=='{}'){
           console.log(obj)
           obj.page = {
             nowPage:1,
@@ -417,11 +450,18 @@
           self.orderInfoModal = true
           maskLayer.show()
         }else{
-
+          let data = self.orderList[index]
+          self.editOrderObj = data
+          if(data.hasOwnProperty('remark')){
+            self.orderRemark = data.remark
+          }
+          self.orderStatus = data.statusText
+          self.editOrderModal = true
+          maskLayer.show()
         }
       },
       changePageSize(size){
-        if(Object.getOwnPropertyNames(this.inquiryOrderObj).length !==0){
+        if(JSON.stringify(this.inquiryOrderObj)!=='{}'){
           this.inquiryOrderObj.page = {
             nowPage:1,
             pageSize:size
@@ -432,7 +472,7 @@
         }
       },
       toNextPage(nextPage){
-        if(Object.getOwnPropertyNames(this.inquiryOrderObj).length !==0){
+        if(JSON.stringify(this.inquiryOrderObj)!=='{}'){
           this.inquiryOrderObj.page = {
             nowPage:nextPage,
             pageSize:this.orderPageInfo.pageSize
@@ -458,6 +498,9 @@
             break;
           case 1:
             this.inquiryOrderModal = false;
+            break;
+          case 2:
+            this.editOrderModal =false
             break;
         }
         maskLayer.hide()

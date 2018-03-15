@@ -142,8 +142,10 @@
       },
     },
     mounted(){
-      this.$store.dispatch('getLatentOrder',{nowPage:1,pageSize:10})
-      this.$store.dispatch('getProvinceList')
+      if(this.latentOrderList.length === 0){
+        this.$store.dispatch('getLatentOrder',{nowPage:1,pageSize:10})
+        this.$store.dispatch('getProvinceList')
+      }
     },
     data(){
       return {
@@ -181,6 +183,7 @@
           self.inquiryOrderProvinceId='';
           self.inquiryHospital='';
           self.inquiryOrderStatus='';
+          self.inquiryOrderObj = {}
       },
       hideModel(){
         this.inquiryOrderModal = false
@@ -205,7 +208,7 @@
             key:'insuranceAmount',
             value:this.inquiryOrderAmount
           },{
-            key:'status',
+            key:'existOrder',
             value:this.inquiryOrderStatus !== ''?(this.inquiryOrderStatus === '是'?true:false):''
           }];
         for(let i=arr.length-1;i>=0;i--){
@@ -213,7 +216,7 @@
             obj[arr[i].key] = arr[i].value
           }
         }
-        if(Object.getOwnPropertyNames(obj).length !==0){
+        if(JSON.stringify(this.inquiryOrderObj)!=='{}'){
           console.log(obj)
           obj.page = {
             nowPage:1,
@@ -241,28 +244,31 @@
         maskLayer.show()
       },
       inquiryAllOrder(){
-
+        this.cleanInquiryValue()
+        this.$store.dispatch('getLatentOrder',{nowPage:1,pageSize:10})
       },
       changePageSize(size){
-        if(Object.getOwnPropertyNames(this.inquiryOrderObj).length !==0){
+        if(JSON.stringify(this.inquiryOrderObj)!=='{}'){
           this.inquiryOrderObj.page = {
             nowPage:1,
             pageSize:size
           }
-          this.$store.dispatch('searchOrder',this.inquiryOrderObj)
+          this.$store.dispatch('searchLatentOrder',this.inquiryOrderObj)
         }else{
-          this.$store.dispatch('getBabyInsuranceOrderList',{nowPage:1,pageSize:size})
+          this.$store.dispatch('getLatentOrder',{nowPage:1,pageSize:size})
         }
       },
       toNextPage(nextPage){
-        if(Object.getOwnPropertyNames(this.inquiryOrderObj).length !==0){
+        let size = this.latentOrderPageInfo.pageSize
+        console.log(this.latentOrderPageInfo.pageSize,Object.getOwnPropertyNames(this.inquiryOrderObj))
+        if(JSON.stringify(this.inquiryOrderObj)!=='{}'){
           this.inquiryOrderObj.page = {
             nowPage:nextPage,
-            pageSize:this.orderPageInfo.pageSize
+            pageSize:size
           }
-          this.$store.dispatch('searchOrder',this.inquiryOrderObj)
+          this.$store.dispatch('searchLatentOrder',this.inquiryOrderObj)
         }else{
-          this.$store.dispatch('getBabyInsuranceOrderList',{nowPage:nextPage,pageSize:this.orderPageInfo.pageSize})
+          this.$store.dispatch('getLatentOrder',{nowPage:nextPage,pageSize:size})
         }
       }
     }

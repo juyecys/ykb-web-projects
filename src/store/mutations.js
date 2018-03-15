@@ -72,20 +72,7 @@ export const mutations = {
 
 
   /*上传图片*/
-  [types.UPLOADIMAGE](state,{data}){
-    axios.post('/ykb/mg/private/file/upload',data)
-         .then(res=>{
-            console.log(res)
-           if(res.data.code === 2000){
-              state.uploadImageUrl = res.data.result
-           }else{
-             withNoAuthority(res.data.code+" "+res.data.desc,res.data.code)
-           }
-
-         })
-         .catch(error=>{
-            console.log(error)
-           withNoAuthority(error,state.hadLogin)
-         })
+  [types.UPLOADIMAGE](state,data){
+    state.uploadImageUrl = data
   },
 }

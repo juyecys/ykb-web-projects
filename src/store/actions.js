@@ -23,7 +23,18 @@ export const btnClickOver = ({commit})=>{
 }
 
 export const uploadImage = ({commit},{data}) =>{
-  commit(types.UPLOADIMAGE,{data})
+  axios.post('/ykb/mg/private/file/upload',data)
+    .then(res=>{
+      console.log(res,types)
+      if(res.data.code === 2000){
+        commit(types.UPLOADIMAGE,res.data.result)
+      }else{
+        commit(types.ERRORCODE,{error:res.data.desc,code:res.data.code})
+      }
+    })
+    .catch(error=>{
+      commit(types.ERRORSTATUS,error)
+    })
 }
 
 export const getUserMenuList = ({commit},{nowPage,pageSize}) =>{

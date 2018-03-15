@@ -32,7 +32,7 @@ module.exports = {
         assetsPublicPath: '/',
         proxyTable: {
             '/ykb': {
-                target: 'http://192.168.1.31:8080', //'https://m.chengyisheng.com.cn',//'http://192.168.1.31:8080',//
+                target: 'https://staging.chengyisheng.com.cn', //'https://m.chengyisheng.com.cn',//'http://192.168.1.31:8080',//
                 changeOrigin: true
             }
         },

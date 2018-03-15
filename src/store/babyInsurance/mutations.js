@@ -39,6 +39,16 @@ const mutations = {
       start:data.start
     }
   },
+  //修改订单状态以及备注
+  [types.CHANGEONEORDERDATA](state,data){
+    let orderList = state.orderList
+    for(let i=0,len=orderList.length;i<len;i++){
+      if(orderList[i].id === data.id){
+        orderList.splice(i,1,data)
+        break;
+      }
+    }
+  },
 
 }
 

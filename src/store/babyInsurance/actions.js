@@ -67,6 +67,22 @@ export const searchLatentOrder = ({commit},obj) =>{
       commit(rootTypes.ERRORSTATUS,error)
     })
 }
+//修改订单状态以及备注
+export const editOneOrder = ({commit},obj) =>{
+  axios.post('/ykb/mg/private/order/',obj)
+    .then(res=>{
+      console.log(res,types)
+      if(res.data.code === 2000){
+        commit(types.CHANGEONEORDERDATA,res.data.result)
+      }else{
+        commit(rootTypes.ERRORCODE,{error:res.data.desc,code:res.data.code})
+      }
+    })
+    .catch(error=>{
+      commit(rootTypes.ERRORSTATUS,error)
+    })
+}
+
 
 
 

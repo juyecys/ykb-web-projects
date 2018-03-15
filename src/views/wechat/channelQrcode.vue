@@ -256,7 +256,7 @@
         return this.$store.state.wechat.testMessagesPeople
       },
       uploadImageUrl(){
-        return this.$store.state.wechat.uploadImageUrl
+        return this.$store.state.uploadImageUrl
       },
       allChannelGroupList(){
         let channelGroupId = [],channelGroupName=[],allChannelGroupList = this.$store.state.users.allChannelGroupList
