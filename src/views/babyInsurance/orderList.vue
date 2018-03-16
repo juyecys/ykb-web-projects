@@ -4,7 +4,7 @@
     <operation-btn :btns="btns"></operation-btn>
     <itable
       :ths="['用户Id','订单号','微信昵称','被保人年龄','保障金额','保费','医院名称','下单时间','订单状态','操作']"
-      :tds="['userId','orderNumber','nickName','insuredAge','insuranceAmount','orderAmount','hospitalName','orderDate','statusText','##[static/images/search.png,static/images/write.png]##']"
+      :tds="['userId','orderNumber','nickName','insuredAge','insuranceAmount','orderAmount','hospitalName','orderDate','statusText','##[static/images/search.png,static/images/log.png,static/images/write.png]##']"
       :tableData="orderList"
       :totalPage="orderPageInfo.totalPage"
       :totalCount="orderPageInfo.totalCount"
@@ -226,6 +226,16 @@
         </div>
       </div>
     </modal>
+    <modal :show="orderLogModal" title="查询订单状态" @makesure="hideModel(3)" :cancelShow="false"  confirmTxt="关闭"  id="orderLogModal" >
+      <itable
+        :ths="['订单号','状态','时间']"
+        :tds="['order_number','statusText','createdDate']"
+        :tableData="orderLogList"
+        :toPagination="false"
+        :showTotalCount="false"
+        :minTableWidth="400"
+      ></itable>
+    </modal>
   </div>
 </template>
 
@@ -264,36 +274,11 @@
         }
       },
       orderList(){
-        let orderList = this.$store.state.babyInsurance.orderList,
-            statusText = '',
+        let self = this,
+            orderList = self.$store.state.babyInsurance.orderList,
             relationText= ''
         orderList.map(item=>{
-          switch (item.status){
-            case 'WAIT_CONFIRM':
-              statusText = '待确认'
-              break;
-            case 'WAIT_PAIED':
-              statusText = '待支付'
-              break;
-            case 'AUDIT_NOT_THROUGH':
-              statusText = '审核未通过'
-              break;
-            case 'PAIED':
-              statusText = '已支付'
-              break;
-            case 'OVERTIME_PAIED':
-              statusText = '未支付'
-              break;
-            case 'UNDERWRITE':
-              statusText = '已承保'
-              break;
-            case 'END':
-              statusText = '已结束'
-              break;
-            default:
-              statusText = '已结束'
-          }
-          item.statusText = statusText
+          item.statusText = self.getStatusText(item.status)
           switch (item.relation){
             case 'SELF':
               relationText = '本人'
@@ -325,6 +310,16 @@
           province.id.push(item.id)
         })
         return province
+      },
+      orderLogList(){
+        let self = this,
+            data = this.$store.state.babyInsurance.orderLogList
+        data.map(item=>{
+          item.statusText =  self.getStatusText(item.status)
+          console.log(data.statusText)
+        })
+        console.log(data)
+        return data
       }
     },
     mounted(){
@@ -336,6 +331,8 @@
     },
     data(){
       return {
+        orderLogModal:false,
+        //编辑订单信息
         orderRemark:'',
         orderStatus:'',
         editOrderObj:{},
@@ -370,6 +367,35 @@
       }
     },
     methods:{
+      getStatusText(status){
+        let statusText = ''
+        switch (status){
+          case 'WAIT_CONFIRM':
+            statusText = '待确认'
+            break;
+          case 'WAIT_PAIED':
+            statusText = '待支付'
+            break;
+          case 'AUDIT_NOT_THROUGH':
+            statusText = '审核未通过'
+            break;
+          case 'PAIED':
+            statusText = '已支付'
+            break;
+          case 'OVERTIME_PAIED':
+            statusText = '未支付'
+            break;
+          case 'UNDERWRITE':
+            statusText = '已承保'
+            break;
+          case 'END':
+            statusText = '已结束'
+            break;
+          default:
+            statusText = '已结束'
+        }
+        return statusText
+      },
       editOneOrder(){
         let data = this.editOrderObj
         this.$store.dispatch('editOneOrder',{id:data.id,status:this.orderStatus!=='已结束'?data.status:'END',remark:this.orderRemark})
@@ -444,20 +470,28 @@
       operateThisRow(index,_index){
         console.log(index,_index,)
         let self= this
-        if(_index === 0){
-          console.log(self.orderList[index])
-          self.thisOrderInfo = self.orderList[index]
-          self.orderInfoModal = true
-          maskLayer.show()
-        }else{
-          let data = self.orderList[index]
-          self.editOrderObj = data
-          if(data.hasOwnProperty('remark')){
-            self.orderRemark = data.remark
-          }
-          self.orderStatus = data.statusText
-          self.editOrderModal = true
-          maskLayer.show()
+        switch (_index){
+          case 0:
+            self.thisOrderInfo = self.orderList[index]
+            self.orderInfoModal = true
+            maskLayer.show()
+            break;
+          case 1:
+            console.log(self.orderList[index].orderNumber)
+            this.$store.dispatch('getThisOrderLog',self.orderList[index].orderNumber)
+            self.orderLogModal = true
+            maskLayer.show()
+            break;
+          case 2:
+            let data = self.orderList[index]
+            self.editOrderObj = data
+            if(data.hasOwnProperty('remark')){
+              self.orderRemark = data.remark
+            }
+            self.orderStatus = data.statusText
+            self.editOrderModal = true
+            maskLayer.show()
+            break;
         }
       },
       changePageSize(size){
@@ -501,6 +535,9 @@
             break;
           case 2:
             this.editOrderModal =false
+            break;
+          case 3:
+            this.orderLogModal = false
             break;
         }
         maskLayer.hide()

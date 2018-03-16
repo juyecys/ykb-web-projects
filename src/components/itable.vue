@@ -1,6 +1,6 @@
 <template>
   <div class="itable">
-    <div class="allRecords">
+    <div class="allRecords" v-if="showTotalCount">
       总记录数为：{{totalCount}}
     </div>
     <div class="tableContainer">
@@ -46,6 +46,10 @@
   export default {
     name:'itable',
     props:{
+      showTotalCount:{
+        type:Boolean,
+        default:true
+      },
       toPagination:{
         type:Boolean,
         default:true

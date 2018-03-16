@@ -82,6 +82,23 @@ export const editOneOrder = ({commit},obj) =>{
       commit(rootTypes.ERRORSTATUS,error)
     })
 }
+//获取订单日志
+export const getThisOrderLog = ({commit},orderNumber) =>{
+  console.log(orderNumber)
+  axios.get('/ykb/mg/private/order/record?orderNumber='+orderNumber)
+    .then(res=>{
+      console.log(res,types)
+      if(res.data.code === 2000){
+        commit(types.ORDERLOGLIST,res.data.result)
+      }else{
+        commit(rootTypes.ERRORCODE,{error:res.data.desc,code:res.data.code})
+      }
+    })
+    .catch(error=>{
+      commit(rootTypes.ERRORSTATUS,error)
+    })
+}
+
 
 
 

@@ -49,6 +49,11 @@ const mutations = {
       }
     }
   },
+  //获取订单日志
+  [types.ORDERLOGLIST](state,data){
+    state.orderLogList = data
+  },
+
 
 }
 

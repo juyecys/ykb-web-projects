@@ -69,8 +69,6 @@ export const mutations = {
     state.provinceList = data
   },
 
-
-
   /*上传图片*/
   [types.UPLOADIMAGE](state,data){
     state.uploadImageUrl = data

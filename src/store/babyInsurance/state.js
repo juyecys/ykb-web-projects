@@ -8,7 +8,8 @@ const state = {
   orderList:[],
   orderPageInfo:{},
   latentOrderList:[],
-  latentOrderPageInfo:{}
+  latentOrderPageInfo:{},
+  orderLogList:[]
 }
 
 export default state;
