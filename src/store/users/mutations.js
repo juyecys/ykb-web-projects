@@ -5,31 +5,23 @@ import * as types from './mutation-type'
 const mutations = {
   //获取用户信息
   [types.GETUSERS](state,data){
-    let result = data.result
-    state.usersList = []
+    state.usersList = data.hasOwnProperty('result')?data.result:[]
     state.usersPageInfo = {
       nowPage:data.nowPage,
       pageSize:data.pageSize,
       start:data.start,
       totalCount:data.totalCount,
       totalPage:data.totalPage
-    }
-    for(let i=0,len=result.length;i<len;i++){
-      state.usersList.push(result[i])
     }
   },
   [types.SEARCHUSERLIST](state,data){
-    let result = data.result
-    state.usersList = []
+    state.usersList = data.hasOwnProperty('result')?data.result:[]
     state.usersPageInfo = {
       nowPage:data.nowPage,
       pageSize:data.pageSize,
       start:data.start,
       totalCount:data.totalCount,
       totalPage:data.totalPage
-    }
-    for(let i=0,len=result.length;i<len;i++){
-      state.usersList.push(result[i])
     }
   },
   [types.ALLCHANNELLIST](state,data){
