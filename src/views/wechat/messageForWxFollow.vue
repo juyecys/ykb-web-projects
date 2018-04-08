@@ -13,6 +13,7 @@
             @cancelEditThisMessage="cancelEditThisMessage"
             @muchRichTextMessageChange="muchRichTextMessageChange"
             @uploadImage="uploadImage"
+            @uploadWxImage="uploadWxImage"
           ></message-for-wx>
         </li>
       </ul>
@@ -33,6 +34,10 @@
     <div class="uploadFile" >
       <form id="uploadImageForm">
         <input type="file" name="file" id="uploadImage" accept="image/gif, image/jpeg, image/png" @change="toUploadImage" style="display: none;">
+      </form>
+      <form id="uploadWxImageForm">
+        <input type="file" name="file" id="uploadWxImage" accept="image/gif, image/jpeg, image/png" @change="toUploadWxImage" style="display: none;">
+        <input type="text" name="type" value="image" style="display: none;">
       </form>
     </div>
   </div>
@@ -59,6 +64,11 @@
         console.log(message,message.article_list[this.imageIndex],this.imageIndex)
         message.article_list[this.imageIndex].pic_url = val
         this.messages.splice(this.msgIndex,1,message)
+      },
+      thisWxImage(val){
+        let message = this.messages[this.wxImageIndex]
+        message.media_id = val.media_id
+        message.media_url = val.media_url
       }
     },
     computed:{
@@ -105,6 +115,10 @@
             wxMessages[i].typeName = '图文消息'
             continue;
           }
+          if(wxMessages[i].msg_type === 'template'){
+            wxMessages[i].typeName = '模板消息'
+            continue;
+          }
         }
         //console.log(wxMessages)
         return wxMessages
@@ -114,6 +128,9 @@
       },
       uploadImageUrl(){
         return this.$store.state.uploadImageUrl
+      },
+      thisWxImage(){
+        return this.$store.state.wechat.thisWxImage
       }
     },
     mounted(){
@@ -132,10 +149,23 @@
         }],
         messages:[],
         imageIndex:0,
-        msgIndex:0
+        msgIndex:0,
+        wxImageIndex:0
       }
     },
     methods:{
+      toUploadWxImage(){
+        let oinput = document.getElementById('uploadWxImageForm'),
+          formData = new FormData(oinput);
+        console.log(formData,oinput)
+        this.$store.dispatch('uploadWxImage',{data:formData})
+      },
+      uploadWxImage(index){
+        console.log(index)
+        this.wxImageIndex = index
+        let oinput = document.querySelector('#uploadWxImage')
+        oinput.click()
+      },
       toUploadImage(){
         console.log(123)
         let oinput = document.getElementById('uploadImageForm'),
@@ -181,12 +211,25 @@
           msg_type:'',
           canEdit:true,
           imgUrl:'',
+          media_id:'',
+          media_url:'',
           article_list:[{
             title:"",
             description:"",
             url:"",
             pic_url:""
           }],
+          templateMessage:{
+            templateId:'',
+            url:'',
+            keyword1:'',
+            keyword2:'',
+            keyword3:'',
+            keyword4:'',
+            keyword5:'',
+            first:'',
+            remark:''
+          },
           radioData:[{
             name:'开启',
             value:true,
@@ -242,11 +285,16 @@
             item.hasOwnProperty('id') && (obj.id = item.id)
             break;
           case 'image':
-            if(item.imgUrl === ''){
+            if(item.media_url === ''){
               Toast.error({
                 msg:'请上传图片消息的图片'
               })
               return
+            }
+            obj = {
+              msg_type:'image',
+              media_id:item.media_id,
+              media_url:item.media_url
             }
             break;
           case 'article':
@@ -302,6 +350,39 @@
               }
             }
             break;
+          case 'template':
+            let otemplate = item.templateMessage,
+              keyArr = ['templateId','first','url','remark'],
+              objTemp={},
+              canSubmit = true
+            console.log(otemplate)
+            for(let i=0,len=keyArr.length;i<len;i++){
+              if(otemplate[keyArr[i]] !== ''){
+                objTemp[keyArr[i]] = otemplate[keyArr[i]]
+              }else{
+                canSubmit = false
+                return
+              }
+            }
+            for(let i=5;i>=1;i--){
+             if(otemplate['keyword'+i] !== '') {
+               objTemp['keyword'+i] = otemplate['keyword'+i]
+             }
+            }
+            otemplate = Object.assign({},objTemp)
+            obj = {
+              msg_type:'template',
+              templateMessage : otemplate
+            }
+            console.log(obj,otemplate)
+            if(!canSubmit){
+              Toast.error({
+                msg:'请填写完整模板消息内容！'
+              })
+              return
+            }
+            //return
+            break;
           default:Toast.error({
             msg:'请填写消息类型！'
           })
@@ -315,6 +396,7 @@
           }
         }
         obj.type='SUBSCRIBE'
+        console.log(item)
         this.messages.splice(index,1,item)
         console.log(this.messages[index],obj)
         this.$store.dispatch('saveThisMessage',{obj})

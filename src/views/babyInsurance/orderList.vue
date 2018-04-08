@@ -487,6 +487,8 @@
             self.editOrderObj = data
             if(data.hasOwnProperty('remark')){
               self.orderRemark = data.remark
+            }else{
+              self.orderRemark = ''
             }
             self.orderStatus = data.statusText
             self.editOrderModal = true

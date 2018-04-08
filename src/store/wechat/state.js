@@ -15,6 +15,7 @@ const state = {
   },
   thisChannelGroupList:[],
   allChannelGroupList:[],
-  thisQrcodePersonalCount:0
+  thisQrcodePersonalCount:0,
+  thisWxImage:{}
 }
 export default state;

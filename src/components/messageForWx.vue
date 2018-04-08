@@ -4,7 +4,7 @@
       <div class="itemHeader">
         <div class="leftPart">消息{{msgIndex}}:<span :style="{'color':!message.canEdit?'#d43f3a':'#007AFF','margin-left':'10px'}">{{!message.canEdit?'已锁定不可修改':'可修改'}}</span></div>
         <div class="rightPart">
-          <span>消息类型:</span><search-input :value.sync="message.typeName" :searchkey.sync="message.msg_type" :searchData="['文本消息','图片消息','图文消息','多图文']" :searchKeyValue="['text','image','article','article_list']" :onlySelect="true" :canEdit="message.canEdit"></search-input>
+          <span>消息类型:</span><search-input :value.sync="message.typeName" :searchkey.sync="message.msg_type" :searchData="['文本消息','图片消息','图文消息','多图文','模板消息']" :searchKeyValue="['text','image','article','article_list','template']" :onlySelect="true" :canEdit="message.canEdit"></search-input>
         </div>
       </div>
       <div class="itemBody">
@@ -23,7 +23,7 @@
           </div>
           <div class="rightPart">
             <div class="addPicture">
-              <img src="static/images/add.png" alt="" class="addImage" >
+              <img :src="message.media_url !==''?message.media_url:'static/images/add.png'" alt="" class="addImage" @click="uploadWxImage(msgIndex-1)">
             </div>
           </div>
         </div>
@@ -103,6 +103,56 @@
             </div>
           </div>
         </div>
+        <div class="templateContain" v-if="message.msg_type === 'template'">
+          <div class="itemContainer">
+            <div class="leftPart">
+              <span>模板Id:</span>
+            </div>
+            <div class="rightPart">
+              <input type="text" v-model="message.templateMessage.templateId" placeholder="请输入模板Id">
+            </div>
+          </div>
+          <div class="itemContainer">
+            <div class="leftPart">
+              <span>标题:</span>
+            </div>
+            <div class="rightPart">
+              <input type="text" v-model="message.templateMessage.first" placeholder="请输入消息标题">
+            </div>
+          </div>
+          <div class="itemContainer" v-for="keyword in 5">
+            <div class="leftPart">
+              <span>关键词{{keyword}}:</span>
+            </div>
+            <div class="rightPart">
+              <input type="text" v-model="message.templateMessage['keyword'+keyword]" :placeholder="'请输入关键词'+keyword">
+            </div>
+          </div>
+          <div class="itemContainer">
+            <div class="leftPart">
+              <span>正文:</span>
+            </div>
+            <div class="rightPart">
+              <input type="text" v-model="message.templateMessage.remark" placeholder="请输入正文">
+            </div>
+          </div>
+          <div class="itemContainer">
+            <div class="leftPart">
+              <span>跳转链接:</span>
+            </div>
+            <div class="rightPart">
+              <input type="text" v-model="message.templateMessage.url" placeholder="请输入跳转链接">
+            </div>
+          </div>
+          <div class="itemContainer">
+            <div class="leftPart">
+              <span>注意:</span>
+            </div>
+            <div class="rightPart">
+              <p>请严格按照消息模板填写关键词，不要填多，否则消息不能正常发送</p>
+            </div>
+          </div>
+        </div>
         <choice :name="'open'+msgIndex" :choiceDatas="message.radioData"></choice>
       </div>
       <div class="itemFooter">
@@ -156,6 +206,10 @@
       }
     },
     methods:{
+      uploadWxImage(index){
+        console.log('uploadWxImage',index)
+        this.$emit('uploadWxImage',index)
+      },
       uploadImage(index){
         this.$emit('uploadImage',this.msgIndex-1,index)
       },

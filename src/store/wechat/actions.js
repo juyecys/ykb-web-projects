@@ -352,3 +352,18 @@ export const getThisChannelWxMessage = ({commit},{type,scene}) =>{
       commit(rootTypes.ERRORSTATUS,error)
     })
 }
+export const uploadWxImage = ({commit},{data}) =>{
+  axios.post('/ykb/mg/public/material/',data)
+    .then(res=>{
+      console.log(res,types)
+      if(res.data.code === 2000){
+        commit(types.UPLOADWXIMAGE,res.data.result)
+      }else{
+        commit(rootTypes.ERRORCODE,{error:res.data.desc,code:res.data.code})
+      }
+    })
+    .catch(error=>{
+      commit(rootTypes.ERRORSTATUS,error)
+    })
+}
+

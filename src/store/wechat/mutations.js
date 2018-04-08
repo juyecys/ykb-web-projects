@@ -165,8 +165,11 @@ const mutations = {
         break;
       }
     }
-    console.log(wxMessages,isNew,data)
+    console.log('----------------',wxMessages,isNew,data,'----------------')
     if(isNew){
+      if(data.type==='CHANNEL'){
+        wxMessages.shift()
+      }
       wxMessages.push(data)
     }
     console.log(wxMessages,isNew)
@@ -178,12 +181,25 @@ const mutations = {
       msg_type:'',
       canEdit:true,
       imgUrl:'',
+      media_id:'',
+      media_url:'',
       article_list:[{
         title:"",
         description:"",
         url:"",
         pic_url:""
       }],
+      templateMessage:{
+        templateId:'',
+        url:'',
+        keyword1:'',
+        keyword2:'',
+        keyword3:'',
+        keyword4:'',
+        keyword5:'',
+        first:'',
+        remark:''
+      },
       radioData:[{
         name:'开启',
         value:true,
@@ -274,5 +290,13 @@ const mutations = {
     console.log(data,'GETTHISCHANNELGROUPLIST')
     state.thisChannelGroupList = data
   },
+  [types.UPLOADWXIMAGE](state,data){
+    console.log(data,'UPLOADWXIMAGE')
+    state.thisWxImage = {
+      media_id:data.media_id,
+      media_url:data.url
+    }
+  },
+
 }
 export default mutations;
