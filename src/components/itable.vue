@@ -15,7 +15,8 @@
           <td v-for="(td,_index) in tds" :class="tdClass[_index]" @click="tdClick(index,_index,td)" :style="{'color':td.indexOf('#')>-1?'#06e':''}">
             <span v-if="isPrueTdKey(td)==='key'">{{item[td]}}</span>
             <span v-else-if="isPrueTdKey(td)==='text'">{{replaceTdTxtValue(td)}}</span>
-            <img v-for="(item,__index) in replaceTdImgValue(td)" :src="item" alt="" v-else="isPrueTdKey(td) === 'img'" @click="tdImgClick(index,__index)">
+            <img class="head_img" v-else-if="isPrueTdKey(td) === 'imgs'" :src="item[getImgKey(td)]" alt="" >
+            <img v-for="(item,__index) in replaceTdImgValue(td)" :src="item" alt="" v-else-if="isPrueTdKey(td) === 'img'" @click="tdImgClick(index,__index)">
           </td>
         </tr>
         </tbody>
@@ -120,8 +121,13 @@
       return{}
     },
     methods:{
+      getImgKey(td) {
+        return td.replace(/#/g,'');
+      },
       isPrueTdKey(value){
-        if(value.indexOf('##')>-1){
+        if(value.indexOf('###')>-1){
+          return 'imgs'
+        }else if(value.indexOf('##')>-1){
           return 'img'
         }else if(value.indexOf('#')>-1){
           return 'text'
@@ -262,6 +268,10 @@
       }
       img{
         width:15px;
+        margin-right:5px;
+      }
+      .head_img{
+        width:64px;
         margin-right:5px;
       }
       img:last-child{

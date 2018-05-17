@@ -4,6 +4,9 @@ import Index from '../views/index'
 import Login from '../views/login'
 //wechat
 import ChannelGroup from '../views/wechat/channelGroup'
+import BdChannelGroup from '../views/babyInsurance/bdChannelGroup'
+import BdLatentOrder from '../views/babyInsurance/bdLatentOrder'
+import BdChannelSetting from '../views/babyInsurance/bdChannelSetting'
 import ChannelQrcode from '../views/wechat/channelQrcode'
 import ChannelUsers from '../views/wechat/channelUsers'
 import Wxmenu from '../views/wechat/wxmenu'
@@ -40,6 +43,21 @@ export default new Router({
       path: '/wechat/channelGroup',
       name: 'channelGroup',
       component: ChannelGroup
+    },
+    {
+      path: '/babyInsurance/bdChannelGroup',
+      name: 'bdChannelGroup',
+      component: BdChannelGroup
+    },
+    {
+      path: '/babyInsurance/bdLatentOrder',
+      name: 'bdLatentOrder',
+      component: BdLatentOrder
+    },
+    {
+      path: '/babyInsurance/bdChannelSetting',
+      name: 'bdChannelSetting',
+      component: BdChannelSetting
     },
     {
       path: '/wechat/wxmenu',

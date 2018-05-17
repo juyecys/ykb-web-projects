@@ -7,6 +7,13 @@ import router from './router';
 import VCalendar from 'v-calendar';
 import 'v-calendar/lib/v-calendar.min.css';
 import Toast from './components/toast';
+import '@/utils/GlobalFuc'
+import ElementUI from 'element-ui'
+
+import { Message, Loading, MessageBox, Notification } from 'element-ui'
+
+// 挂载插件
+Vue.use(ElementUI)
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
