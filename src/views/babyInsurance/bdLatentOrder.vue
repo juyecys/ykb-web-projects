@@ -275,7 +275,6 @@
       },
       addBdChannel(){
         this.channelForm = {
-          id: '',
           channels: '',
           bd:'',
         }
