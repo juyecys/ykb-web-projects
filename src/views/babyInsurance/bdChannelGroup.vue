@@ -3,8 +3,8 @@
   <div id="bdChannelGroup">
     <operation-btn :btns="btns"></operation-btn>
     <itable
-      :ths="['渠道名称','渠道编码','渠道二维码','备注','最后修改人','最后修改时间','操作']"
-      :tds="['channels','channels_code','#查看#','remark','updatedBy','updatedDate','##{static/images/write.png}##']"
+      :ths="['渠道名称','渠道编码','渠道二维码','BD姓名','备注','最后修改人','最后修改时间','操作']"
+      :tds="['channels','channels_code','#查看#','bd','remark','updatedBy','updatedDate','##{static/images/write.png}##']"
       :tableData="bdChannelResult.result"
       :totalPage="bdChannelResult.totalPage"
       :totalCount="bdChannelResult.totalCount"
@@ -16,7 +16,7 @@
       @pageSizeHadChange="changePageSize"
       @tdImgClick="operationTd"
     ></itable>
-    <modal :show="showInquiryModal" @makesure="operateChannelGroup(1)" @cancel="cancel(1)" confirmTxt="确定" title="查询" id="showInquiryModal">
+    <modal :show="showInquiryModal" @makesure="operateChannelGroup(1)" :footerBtn="inquiryOrderBtn" @cancel="cancel(1)" confirmTxt="确定" title="查询" id="showInquiryModal">
       <div class="bdChannelGroupContainer">
         <div class="channelItem">
           <span>渠道名称</span>
@@ -39,7 +39,7 @@
           <span>渠道名称</span>
           <input type="text" v-model="channelForm.channels" placeholder="请输入渠道名称">
         </div>
-        <div class="channelItem">
+        <div v-if="isNullOrEmpty(channelForm.id)" class="channelItem">
           <span>渠道编码</span>
           <input type="text" v-model="channelForm.channels_code" placeholder="请输入渠道编码">
         </div>
@@ -114,6 +114,10 @@
           name:'查询全部',
           event:this.inQuiryAllChannel
         }],
+        inquiryOrderBtn:[{
+          name:'清除条件',
+          event:this.cleanInquiryValue
+        }],
         showInquiryModal:false,
         showModal:false,
         showChannelGroupListModal:false,
@@ -136,6 +140,9 @@
       }
     },
     methods:{
+      cleanInquiryValue() {
+        this.queryForm = {}
+      },
       inQuiryAllChannel() {
         this.pagination.nowPage = 1;
         this.fetchList()
@@ -224,21 +231,35 @@
               return
             }
 
-            if(this.isNullOrEmpty(this.channelForm.bd)){
-              toast.error({
-                msg:'请填写BD姓名'
-              })
-              return
-            }
-
             if(this.isNullOrEmpty(this.channelForm.id)){
-              this.channelForm.qr_code_url = process.env.API_URL + "/ykb_qianhai/index.html?#/buyInsurance/"+this.channelForm.channels_code
+              if (document.domain.indexOf('staging') > -1) {
+                this.channelForm.qr_code_url = "http://staging.chengyisheng.com.cn/ykb/wp/public/login/?ykb_url=http://staging.chengyisheng.com.cn/ykb_qianhai/index.htmlssssbuyInsurancessss"+this.channelForm.channels_code
+              } else if (document.domain.indexOf('localhost') > -1) {
+                this.channelForm.qr_code_url = "http://staging.chengyisheng.com.cn/ykb/wp/public/login/?ykb_url=http://staging.chengyisheng.com.cn/ykb_qianhai/index.htmlssssbuyInsurancessss"+this.channelForm.channels_code
+              } else {
+                this.channelForm.qr_code_url = "http://m.chengyisheng.com.cn/ykb/wp/public/login/?ykb_url=http://m.chengyisheng.com.cn/ykb_qianhai/index.htmlssssbuyInsurancessss"+this.channelForm.channels_code
+              }
+
+               // http://staging.chengyisheng.com.cn/ykb/wp/public/login/?ykb_url=http://staging.chengyisheng.com.cn/ykb_qianhai/index.html#/orderList
+
+              this.channelForm.qr_code_url = encodeURIComponent(this.channelForm.qr_code_url);
+
+              console.log(this.channelForm.qr_code_url)
+
+                let link = window.location.hostname === 'm.chengyisheng.com.cn'?
+                  'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx7bfb03bc9c23b615&redirect_uri=' + this.channelForm.qr_code_url + '&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect'
+                  :
+                  'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx51e37306f30d52a9&redirect_uri=' + this.channelForm.qr_code_url + '&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect'
+              this.channelForm.qr_code_url = link
             }
 
             axios.post('/ykb/mg/private/bdchannel/',this.channelForm)
               .then(res=>{
                 console.log(res)
                 if(res.data.code === 2000){
+                  this.pagination.nowPage = 1;
+                  this.fetchList()
+
                   toast.success({
                     msg:'操作成功'
                   })

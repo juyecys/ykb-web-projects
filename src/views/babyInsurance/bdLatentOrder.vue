@@ -4,7 +4,7 @@
     <operation-btn :btns="btns"></operation-btn>
     <itable
       :ths="['微信昵称','头像','姓名','出生年月','年龄','性别','手机号码','渠道名','创建时间','关联订单号','订单状态','备注','操作']"
-      :tds="['nick_name','###head_img_url###','name','birthday','age','gender','mobile','channels','createdDate','order_no','status','remark','##{static/images/write.png}##']"
+      :tds="['nick_name','###head_img_url###','name','birthday','age','genderStr','mobile','channels','createdDate','order_no','statusStr','remark','##{static/images/write.png}##']"
       :tableData="bdChannelResult.result"
       :totalPage="bdChannelResult.totalPage"
       :totalCount="bdChannelResult.totalCount"
@@ -16,7 +16,7 @@
       @pageSizeHadChange="changePageSize"
       @tdImgClick="operationTd"
     ></itable>
-    <modal :show="showInquiryModal" @makesure="operateChannelGroup(1)" @cancel="cancel(1)" confirmTxt="确定" title="查询" id="showInquiryModal">
+    <modal :show="showInquiryModal" @makesure="operateChannelGroup(1)"  :footerBtn="inquiryOrderBtn"  @cancel="cancel(1)"  confirmTxt="确定" title="查询" id="showInquiryModal">
       <div class="bdChannelGroupContainer">
         <div class="channelItem">
           <span>渠道名称</span>
@@ -51,15 +51,24 @@
           <span>姓名</span>
           <input type="text" v-model="channelForm.name" placeholder="请输入姓名">
         </div>
+
+
         <div class="channelItem">
           <span>出生年月</span>
           <el-date-picker
+            @change="dateChange"
             v-model="channelForm.birthday"
             type="date"
             value-format="yyyy-MM-dd HH:mm:ss"
             placeholder="选择年月日">
           </el-date-picker>
         </div>
+
+        <div class="channelItem">
+          <span>年龄</span>
+          <input type="number" v-model="channelForm.age" placeholder="请输入年龄" @change="changeAge()">
+        </div>
+
         <div class="channelItem">
           <span>手机号</span>
           <input type="text" v-model="channelForm.mobile" placeholder="请输入手机号码">
@@ -153,6 +162,10 @@
           name:'查询全部',
           event:this.inQuiryAllChannel
         }],
+        inquiryOrderBtn:[{
+          name:'清除条件',
+          event:this.cleanInquiryValue
+        }],
         showInquiryModal:false,
         showModal:false,
         showChannelGroupListModal:false,
@@ -175,6 +188,28 @@
       }
     },
     methods:{
+      dateChange() {
+        console.log(this.channelForm.birthday)
+        //this.channelForm.age = this.ages(this.channelForm.birthday) + '';
+        this.$set(this.channelForm, 'age', this.ages(this.channelForm.birthday))
+        console.log('计算后的年龄' + this.channelForm.age)
+      },
+      changeAge() {
+        console.log(this.channelForm.age)
+        let date = new Date();
+        let y = date.getFullYear();
+
+        y = y -this.channelForm.age;
+        date.setFullYear(y)
+
+        let birthday = this.formatDate(date, 'yyyy-MM-dd')
+
+        this.$set(this.channelForm, 'birthday', birthday)
+        console.log(this.channelForm.birthday)
+      },
+      cleanInquiryValue() {
+        this.queryForm = {}
+      },
       inQuiryAllChannel() {
         this.pagination.nowPage = 1;
         this.fetchList()
@@ -219,6 +254,22 @@
         }
         return 0;
       },
+      getStatus(s) {
+        if (!s) {
+          return ''
+        }
+        switch (s) {
+          case 'WAIT_CONFIRM': return '待确认';
+          case 'WAIT_AUDIT': return '待审核';
+          case 'WAIT_PAIED': return '审核通过,待付款';
+          case 'AUDIT_NOT_THROUGH': return '审核不通过';
+          case 'PAIED': return '已支付';
+          case 'OVERTIME_PAIED': return '超时未支付';
+          case 'UNDERWRITE': return '已承保';
+          case 'END': return '结束';
+        }
+        return '未知状态'
+      },
       fetchList(query) {
         axios.get('/ykb/mg/private/bduser/?page.nowPage='+ this.pagination.nowPage + '&page.pageSize='+ this.pagination.pageSize, {
           params: query
@@ -230,6 +281,16 @@
               for (let r of this.bdChannelResult.result) {
                 try {r.age = this.ages(r.birthday);
                 } catch (e) {}
+
+                r.genderStr = this.isNullOrEmpty(r.gender)? '' : (r.gender === 1 ? '男' : '女');
+                r.gender = r.gender + ''
+                r.statusStr = this.getStatus(r.status);
+
+                if (r.birthday && r.birthday.length >= 10) {
+                  r.birthday = r.birthday.substr(0, 10);
+                  console.log(r.birthday)
+                }
+
               }
             }else{
               toast.error({
@@ -248,11 +309,11 @@
         console.log(_index)
 
         if (_index === 2) {
-          this.showTdIndex = 2
+          /*this.showTdIndex = 2
           this.$set(this.tdObject,'qrcodeUrl',this.bdChannelResult.result[index].qr_code_url)
           this.$set(this.tdObject,'qrcodeName',this.bdChannelResult.result[index].channels)
           this.ModalForShowTdValue = true;
-          maskLayer.show()
+          maskLayer.show()*/
         }
       },
       operationTd(index,_index){
@@ -289,29 +350,36 @@
         console.log('operateChannelGroup',code)
         switch (code){
           case 0:
-            if(this.isNullOrEmpty(this.channelForm.name)){
+            if(this.isNullOrEmpty(this.channelForm.nick_name)){
               toast.error({
-                msg:'请填写姓名'
+                msg:'请填写微信昵称'
               })
               return
             }
 
-            if(!this.isPhone(this.channelForm.mobile)){
-              toast.error({
-                msg:'请填写正确手机号码'
-              })
-              return
+            if (!this.isNullOrEmpty(this.channelForm.mobile)) {
+              if(!this.isPhone(this.channelForm.mobile)){
+                toast.error({
+                  msg:'请填写正确手机号码'
+                })
+                return
+              }
             }
-
             console.log('dddd')
 
             if(this.isNullOrEmpty(this.channelForm.id)){
+            }
+
+            if (!this.isNullOrEmpty(this.channelForm.birthday) && this.channelForm.birthday.length <= 10) {
+              this.channelForm.birthday = this.channelForm.birthday + ' 00:00:00'
             }
             this.channelForm.bd_channel_id = this.channelForm.bdChannelId;
             axios.post('/ykb/mg/private/bduser/',this.channelForm)
               .then(res=>{
                 console.log(res)
                 if(res.data.code === 2000){
+                  this.pagination.nowPage = 1;
+                  this.fetchList()
                   toast.success({
                     msg:'操作成功'
                   })

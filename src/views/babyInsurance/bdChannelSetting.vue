@@ -6,10 +6,16 @@
     <div class="bdChannelGroupContainer">
       <span>Banner设置</span>
       <div class="channelItem" v-for="(banner,index) in bannerList">
-        <img :src="banner.img"/>
-        <p>{{banner.link}}</p><br/>
-        <img src="static/images/write.png" @click="editBanner(index)"/>
-        <img src="static/images/delete.png" @click="removeBanner(index)"/>
+        <p>
+          <img class="banner" :src="banner.img"/>
+          <span>
+            {{banner.link}}
+          </span>
+        </p>
+        <p>
+          <img src="static/images/write.png" @click="editBanner(index)"/>
+          <img src="static/images/delete.png" @click="removeBanner(index)"/>
+        </p>
       </div>
       <p>
           <img src="static/images/add.png" @click="editBanner(-1)"/>
@@ -20,9 +26,16 @@
 
     <div class="bdChannelGroupContainer">
       <span>图片设置</span>
-      <div v-for="(img, index) in imgs">
-        <img :src="img" @click="uploadImage('imgs', index)"/>
-        <img src="static/images/delete.png" @click="removeImg(index)"/>
+      <div style="display: flex" v-for="(img, index) in imgs">
+        <p>
+          <img class="banner" :src="img" />
+        </p>
+        <p>
+          <img src="static/images/write.png" @click="uploadImage('imgs', index)"/>
+        </p>
+        <p>
+          <img src="static/images/delete.png" @click="removeImg(index)"/>
+        </p>
       </div>
       <p>
         <img src="static/images/add.png" @click="uploadImage('imgs', -1)"/>
@@ -32,22 +45,24 @@
     <div class="bdChannelGroupContainer">
         <span>客服二维码</span>
       <p>
-        <img :src="kefu ? kefu : 'static/images/add.png'" @click="uploadImage('kefu')"/>
+        <img class="banner" :src="kefu ? kefu : 'static/images/add.png'" @click="uploadImage('kefu')"/>
       </p>
     </div>
 
     <div class="bdChannelGroupContainer">
         <span>Email接收列表</span>
       <div class="channelItem">
-        <textarea type="text" v-model="email" placeholder="Email接收列表"></textarea>
+        <textarea  type="text" v-model="email" placeholder="Email接收列表"></textarea>
       </div>
     </div>
 
     <modal :show="showModal" @makesure="editBannerDo(0)" @cancel="cancel(0)" confirmTxt="确定" title="banner设置" id="showModal">
-      <div class="bdChannelGroupContainer">
+      <div class="Modal bdChannelGroupContainer">
         <div class="channelItem">
           <span>图片</span>
-          <img :src="channelForm.img ? channelForm.img : 'static/images/add.png'" @click="uploadImage('banner')"/>
+          <p>
+            <img class="banner" :src="channelForm.img ? channelForm.img : 'static/images/add.png'" @click="uploadImage('banner')"/>
+          </p>
         </div>
         <div class="channelItem">
           <span>banner连接</span>
@@ -136,7 +151,7 @@
 
         switch (this.uploadData.type) {
           case 'banner':
-            this.channelForm.img = val;
+            this.$set(this.channelForm,'img',val)
             break;
 
           case 'imgs':
@@ -147,7 +162,8 @@
             }
             break;
           case 'kefu':
-            this.kefu = val;
+            console.log('kefu' + val)
+            this.kefu = val
             break;
         }
 
@@ -406,21 +422,26 @@
   }
 </script>
 <style lang="less" scoped>
-  .bdChannelGroupContainer{
-    img{
-      width: 48px;
-      height: 48px;
+  .Modal{
+    padding-left: 0 !important;
+    background: transparent !important;
+    .channelItem span{
+      width: 26% !important;
     }
+  }
+  .bdChannelGroupContainer{
+    padding: 20px;
+    padding-left: 100px;
+    background: #dcdfe6;
     width:100%;
-    text-align:center;
+    margin-bottom: 20px;
     .channelItem{
       margin:20px 0;
       display:flex;
-      justify-content:center;
       span{
         font-size:14px;
         margin-right:20px;
-        width:90px;
+        width:40%;
         height:36px;
         line-height:36px;
         text-align: right;
@@ -437,13 +458,18 @@
       }
       textarea{
         resize: none;
-        height:100px;
+        width: 500px;
+        height:150px;
       }
       .choiceContainer{
         width:300px;
         text-align: left;
       }
     }
+  }
+  .banner{
+    width: 200px !important;
+    display: block;
   }
 
 </style>
